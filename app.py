@@ -119,7 +119,8 @@ class ScheduleSolver:
         for s in range(len(shifts)):
             for d in range(days_in_month):
                 # Sum of workers assigned to this shift on this day should equal workers_per_shift
-                self.model.Add(sum(x[m, s, d] for m in range(len(members)) == workers_per_shift))
+                constraint = sum(x[m, s, d] for m in range(len(members))) == workers_per_shift
+                self.model.Add(constraint)
     
     def _add_max_days_per_month_constraint(self, x, members, days_in_month, constraints):
         """Limit maximum days per month per worker"""
