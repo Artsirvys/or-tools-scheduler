@@ -53,7 +53,7 @@ class ScheduleSolver:
             self._add_min_rest_hours_constraint(x, members, shifts, days_in_month, constraints)
             
             # 6. ALL WORKERS MUST BE ASSIGNED (Soft constraint with penalty)
-            self._add_assignment_balance_constraint(x, members, days_in_month)
+            self._add_assignment_balance_constraint(x, members, shifts, days_in_month)
             
             # 7. CUSTOM CONSTRAINTS (Dynamic based on team rules)
             self._add_custom_constraints(x, members, shifts, days_in_month, constraints)
@@ -114,7 +114,7 @@ class ScheduleSolver:
         for s in range(len(shifts)):
             for d in range(days_in_month):
                 # Sum of workers assigned to this shift on this day should equal workers_per_shift
-                self.model.Add(sum(x[m, s, d] for m in range(len(members))) == workers_per_shift)
+                self.model.Add(sum(x[m, s, d] for m in range(len(members)) == workers_per_shift))
     
     def _add_max_days_per_month_constraint(self, x, members, days_in_month, constraints):
         """Limit maximum days per month per worker"""
@@ -140,13 +140,12 @@ class ScheduleSolver:
                 # If assigned on day d, day d+1 must be 0
                 self.model.Add(day_d_assignments + day_d_plus_1_assignments <= 1)
     
-    def _add_assignment_balance_constraint(self, x, members, days_in_month):
+    def _add_assignment_balance_constraint(self, x, members, shifts, days_in_month):
         """Ensure all workers get some assignments (soft constraint)"""
-        shifts_count = 3  # Assuming 3 shifts per day
         
         for m in range(len(members)):
             # Each member should get at least some assignments
-            total_assignments = sum(x[m, s, d] for s in range(shifts_count) for d in range(days_in_month))
+            total_assignments = sum(x[m, s, d] for s in range(len(shifts)) for d in range(days_in_month))
             self.model.Add(total_assignments >= 1)  # At least 1 assignment per month
     
     def _add_custom_constraints(self, x, members, shifts, days_in_month, constraints):
