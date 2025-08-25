@@ -72,6 +72,11 @@ class ScheduleSolver:
     
     def _add_availability_constraints(self, x, members, shifts, availability, days_in_month):
         """Add availability constraints - workers can only be assigned when available"""
+        # Ensure availability is a list
+        if not isinstance(availability, list):
+            logging.warning(f"Availability is not a list: {type(availability)}, skipping availability constraints")
+            return
+            
         for m in range(len(members)):
             for s in range(len(shifts)):
                 for d in range(days_in_month):
@@ -206,6 +211,8 @@ def solve_schedule():
                 return jsonify({"error": f"Missing required field: {field}"}), 400
         
         logging.info(f"Solving schedule for team with {len(data['members'])} members, {len(data['shifts'])} shifts")
+        logging.info(f"Data types - members: {type(data['members'])}, shifts: {type(data['shifts'])}, availability: {type(data['availability'])}, constraints: {type(data['constraints'])}")
+        logging.info(f"Availability data: {data['availability']}")
         
         # Solve the schedule
         result = solver.solve_schedule(data)
