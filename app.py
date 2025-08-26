@@ -78,7 +78,20 @@ class ScheduleSolver:
             
             # Solve the model
             logging.info("=== STARTING SOLVER ===")
-            logging.info(f"Model has {self.model.NumConstraints()} constraints and {self.model.NumVariables()} variables")
+            
+            # Handle different OR-Tools versions for constraint/variable counting
+            try:
+                num_constraints = self.model.NumConstraints()
+                num_variables = self.model.NumVariables()
+            except AttributeError:
+                try:
+                    num_constraints = len(self.model.Proto().constraints)
+                    num_variables = len(self.model.Proto().variables)
+                except AttributeError:
+                    num_constraints = "unknown"
+                    num_variables = "unknown"
+            
+            logging.info(f"Model has {num_constraints} constraints and {num_variables} variables")
             
             status = self.solver.Solve(self.model)
             
