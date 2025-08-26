@@ -52,27 +52,15 @@ class ScheduleSolver:
             logging.info("Adding availability constraints...")
             self._add_availability_constraints(x, members, shifts, availability, days_in_month, month, year)
             
-            # 2. NO CONSECUTIVE NIGHTS (Hard constraint)
-            logging.info("Adding consecutive nights constraint...")
-            self._add_no_consecutive_nights_constraint(x, members, shifts, days_in_month)
-            
-            # 3. WORKERS PER SHIFT (Hard constraint)
+            # 2. WORKERS PER SHIFT (Hard constraint)
             logging.info("Adding workers per shift constraint...")
             self._add_workers_per_shift_constraint(x, members, shifts, days_in_month, constraints)
             
-            # 4. MAX DAYS PER MONTH (Hard constraint)
+            # 3. MAX DAYS PER MONTH (Hard constraint)
             logging.info("Adding max days per month constraint...")
             self._add_max_days_per_month_constraint(x, members, shifts, days_in_month, constraints)
             
-            # 5. MIN REST HOURS (Hard constraint)
-            logging.info("Adding min rest hours constraint...")
-            self._add_min_rest_hours_constraint(x, members, shifts, days_in_month, constraints)
-            
-            # 6. ALL WORKERS MUST BE ASSIGNED (Soft constraint with penalty)
-            logging.info("Adding assignment balance constraint...")
-            self._add_assignment_balance_constraint(x, members, shifts, days_in_month)
-            
-            # 7. CUSTOM CONSTRAINTS (Dynamic based on team rules)
+            # 4. CUSTOM CONSTRAINTS (Dynamic based on team rules)
             logging.info("Adding custom constraints...")
             self._add_custom_constraints(x, members, shifts, days_in_month, constraints)
             
@@ -147,12 +135,6 @@ class ScheduleSolver:
         
         logging.info(f"Added {constraints_added} availability constraints")
     
-    def _add_no_consecutive_nights_constraint(self, x, members, shifts, days_in_month):
-        """Add constraint to prevent consecutive night shifts (only for night shifts)"""
-        # This constraint is now optional and should be configurable per team
-        # For now, we'll skip it to allow the solver to find solutions
-        pass
-    
     def _add_workers_per_shift_constraint(self, x, members, shifts, days_in_month, constraints):
         """Ensure correct number of workers per shift"""
         workers_per_shift = constraints.get('workers_per_shift', 1)
@@ -182,18 +164,7 @@ class ScheduleSolver:
         
         logging.info(f"Added {constraints_added} max days per month constraints")
     
-    def _add_min_rest_hours_constraint(self, x, members, shifts, days_in_month, constraints):
-        """Ensure minimum rest hours between shifts"""
-        # This constraint is now optional and should be configurable per team
-        # For now, we'll skip it to allow the solver to find solutions
-        # Teams can configure their own rest hour policies based on shift timing
-        pass
-    
-    def _add_assignment_balance_constraint(self, x, members, shifts, days_in_month):
-        """Ensure all workers get some assignments (soft constraint)"""
-        # This constraint is now truly soft - we'll try but won't fail if impossible
-        # Teams can configure their own assignment balance policies
-        pass
+
     
     def _add_custom_constraints(self, x, members, shifts, days_in_month, constraints):
         """Add custom constraints based on team rules"""
