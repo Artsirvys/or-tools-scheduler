@@ -159,6 +159,8 @@ Return ONLY valid JSON, no additional text or explanation.
         
         # Merge shift rules
         if db_constraints.get('max_consecutive_days'):
+            # Note: This constraint limits the maximum number of consecutive shifts in a row per worker
+            # The name "max_consecutive_days" is kept for database compatibility
             merged['shift_rules'].append({
                 "type": "max_consecutive_days",
                 "value": db_constraints['max_consecutive_days']
@@ -177,6 +179,8 @@ Return ONLY valid JSON, no additional text or explanation.
             })
         
         if db_constraints.get('max_days_per_month'):
+            # Note: This constraint limits the total number of shift assignments per worker per month
+            # The name "max_days_per_month" is kept for database compatibility
             merged['shift_rules'].append({
                 "type": "max_days_per_month",
                 "value": db_constraints['max_days_per_month']

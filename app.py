@@ -56,11 +56,18 @@ class ScheduleSolver:
             logging.info("Adding workers per shift constraint...")
             self._add_workers_per_shift_constraint(x, members, shifts, days_in_month, constraints)
             
-            # 3. MAX DAYS PER MONTH (Hard constraint)
-            logging.info("Adding max days per month constraint...")
-            self._add_max_days_per_month_constraint(x, members, shifts, days_in_month, constraints)
+            # 3. MAX SHIFTS PER MONTH (Hard constraint)
+            # This constraint limits the total number of shift assignments per worker per month
+            # The constraint key 'max_days_per_month' is kept for backward compatibility
+            logging.info("Adding max shifts per month constraint...")
+            self._add_max_shifts_per_month_constraint(x, members, shifts, days_in_month, constraints)
             
-            # 4. CUSTOM CONSTRAINTS (Dynamic based on team rules)
+            # 4. MAX CONSECUTIVE SHIFTS (Hard constraint)
+            # This constraint limits how many shifts in a row a worker can be assigned
+            logging.info("Adding max consecutive shifts constraint...")
+            self._add_max_consecutive_shifts_constraint(x, members, shifts, days_in_month, constraints)
+            
+            # 5. CUSTOM CONSTRAINTS (Dynamic based on team rules)
             logging.info("Adding custom constraints...")
             self._add_custom_constraints(x, members, shifts, days_in_month, constraints)
             
@@ -109,6 +116,9 @@ class ScheduleSolver:
         logging.info(f"Adding availability constraints for {len(members)} members, {len(shifts)} shifts, {days_in_month} days")
         
         constraints_added = 0
+        total_possible_assignments = len(members) * len(shifts) * days_in_month
+        logging.info(f"Total possible assignments: {total_possible_assignments}")
+        
         for m in range(len(members)):
             for s in range(len(shifts)):
                 for d in range(days_in_month):
@@ -118,22 +128,36 @@ class ScheduleSolver:
                     member_id = members[m]['id']
                     shift_id = shifts[s]['id']
                     
-                    # Check if member is unavailable for this shift/date
-                    is_unavailable = any(
-                        a['user_id'] == member_id and 
-                        a['shift_id'] == shift_id and 
-                        a['date'] == date_str and 
-                        a['status'] == 'unavailable'
-                        for a in availability
+                    # Check availability status for this member, shift, and date
+                    availability_entry = next(
+                        (a for a in availability 
+                         if a['user_id'] == member_id and 
+                            a['shift_id'] == shift_id and 
+                            a['date'] == date_str),
+                        None
                     )
                     
-                    if is_unavailable:
-                        # Force assignment to 0 if unavailable
-                        self.model.Add(x[m, s, d] == 0)
-                        constraints_added += 1
-                        logging.debug(f"Added constraint: {members[m]['name']} cannot work {shifts[s]['name']} on {date_str}")
+                    if availability_entry:
+                        if availability_entry['status'] == 'unavailable':
+                            # Force assignment to 0 if unavailable
+                            self.model.Add(x[m, s, d] == 0)
+                            constraints_added += 1
+                            logging.debug(f"Added constraint: {members[m]['name']} cannot work {shifts[s]['name']} on {date_str}")
+                        elif availability_entry['status'] == 'available':
+                            # Allow assignment (no constraint needed, but log for clarity)
+                            logging.debug(f"{members[m]['name']} can work {shifts[s]['name']} on {date_str}")
+                        elif availability_entry['status'] == 'priority':
+                            # Allow assignment (no constraint needed, but log for clarity)
+                            logging.debug(f"{members[m]['name']} has priority for {shifts[s]['name']} on {date_str}")
+                        else:
+                            # Unknown status, treat as available
+                            logging.debug(f"{members[m]['name']} has unknown status '{availability_entry['status']}' for {shifts[s]['name']} on {date_str}")
+                    else:
+                        # No availability entry = "not set" = available by default
+                        logging.debug(f"{members[m]['name']} has no availability set for {shifts[s]['name']} on {date_str} (treating as available)")
         
-        logging.info(f"Added {constraints_added} availability constraints")
+        logging.info(f"Added {constraints_added} availability constraints out of {total_possible_assignments} total possible assignments")
+        logging.info(f"Remaining assignments ({total_possible_assignments - constraints_added}) are available for scheduling")
     
     def _add_workers_per_shift_constraint(self, x, members, shifts, days_in_month, constraints):
         """Ensure correct number of workers per shift"""
@@ -150,19 +174,35 @@ class ScheduleSolver:
         
         logging.info(f"Added {constraints_added} workers per shift constraints")
     
-    def _add_max_days_per_month_constraint(self, x, members, shifts, days_in_month, constraints):
-        """Limit maximum days per month per worker"""
-        max_days = constraints.get('max_days_per_month', 31)
-        logging.info(f"Adding max days per month constraint: {max_days} days per worker")
+    def _add_max_shifts_per_month_constraint(self, x, members, shifts, days_in_month, constraints):
+        """Limit maximum shift assignments per month per worker"""
+        max_shifts = constraints.get('max_days_per_month', 31)  # Keep the same constraint key for backward compatibility
+        logging.info(f"Adding max shifts per month constraint: {max_shifts} shifts per worker")
         
         constraints_added = 0
         for m in range(len(members)):
-            # Sum of all assignments for this member should be <= max_days
+            # Sum of all shift assignments for this member should be <= max_shifts
             total_assignments = sum(x[m, s, d] for s in range(len(shifts)) for d in range(days_in_month))
-            self.model.Add(total_assignments <= max_days)
+            self.model.Add(total_assignments <= max_shifts)
             constraints_added += 1
         
-        logging.info(f"Added {constraints_added} max days per month constraints")
+        logging.info(f"Added {constraints_added} max shifts per month constraints")
+    
+    def _add_max_consecutive_shifts_constraint(self, x, members, shifts, days_in_month, constraints):
+        """Limit maximum consecutive shifts in a row per worker"""
+        max_consecutive = constraints.get('max_consecutive_days', 31)  # Keep the same constraint key for backward compatibility
+        logging.info(f"Adding max consecutive shifts constraint: {max_consecutive} consecutive shifts per worker")
+        
+        constraints_added = 0
+        for m in range(len(members)):
+            for d in range(days_in_month - max_consecutive):
+                # For each possible starting day, ensure no more than max_consecutive shifts in a row
+                # This prevents workers from being assigned to too many consecutive shifts
+                consecutive_sum = sum(x[m, s, d + i] for s in range(len(shifts)) for i in range(max_consecutive + 1))
+                self.model.Add(consecutive_sum <= max_consecutive)
+                constraints_added += 1
+        
+        logging.info(f"Added {constraints_added} max consecutive shifts constraints")
     
 
     
