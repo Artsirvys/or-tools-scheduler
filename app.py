@@ -38,7 +38,7 @@ class ScheduleSolver:
                         x[m, s, d] = self.model.NewBoolVar(f'x_{m}_{s}_{d}')
             
             # 1. AVAILABILITY CONSTRAINTS (Hard constraints)
-            self._add_availability_constraints(x, members, shifts, availability, days_in_month)
+            self._add_availability_constraints(x, members, shifts, availability, days_in_month, month, year)
             
             # 2. NO CONSECUTIVE NIGHTS (Hard constraint)
             self._add_no_consecutive_nights_constraint(x, members, shifts, days_in_month)
@@ -70,7 +70,7 @@ class ScheduleSolver:
             logging.error(f"Error solving schedule: {str(e)}")
             return {"error": f"Solver error: {str(e)}"}
     
-    def _add_availability_constraints(self, x, members, shifts, availability, days_in_month):
+    def _add_availability_constraints(self, x, members, shifts, availability, days_in_month, month, year):
         """Add availability constraints - workers can only be assigned when available"""
         # Ensure availability is a list
         if not isinstance(availability, list):
@@ -80,7 +80,7 @@ class ScheduleSolver:
         for m in range(len(members)):
             for s in range(len(shifts)):
                 for d in range(days_in_month):
-                    date_str = f"{datetime.now().year}-{datetime.now().month:02d}-{d+1:02d}"
+                    date_str = f"{year}-{month:02d}-{d+1:02d}"
                     
                     # Find availability for this member, shift, and date
                     member_id = members[m]['id']
