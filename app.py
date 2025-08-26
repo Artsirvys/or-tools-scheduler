@@ -47,7 +47,7 @@ class ScheduleSolver:
             self._add_workers_per_shift_constraint(x, members, shifts, days_in_month, constraints)
             
             # 4. MAX DAYS PER MONTH (Hard constraint)
-            self._add_max_days_per_month_constraint(x, members, days_in_month, constraints)
+            self._add_max_days_per_month_constraint(x, members, shifts, days_in_month, constraints)
             
             # 5. MIN REST HOURS (Hard constraint)
             self._add_min_rest_hours_constraint(x, members, shifts, days_in_month, constraints)
@@ -122,7 +122,7 @@ class ScheduleSolver:
                 constraint = sum(x[m, s, d] for m in range(len(members))) == workers_per_shift
                 self.model.Add(constraint)
     
-    def _add_max_days_per_month_constraint(self, x, members, days_in_month, constraints):
+    def _add_max_days_per_month_constraint(self, x, members, shifts, days_in_month, constraints):
         """Limit maximum days per month per worker"""
         max_days = constraints.get('max_days_per_month', 31)
         
