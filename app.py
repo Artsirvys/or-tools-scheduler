@@ -26,6 +26,17 @@ class ScheduleSolver:
             # Get month details
             days_in_month = (datetime(year, month + 1, 1) - datetime(year, month, 1)).days
             
+            # DEBUG: Log all input data
+            logging.info(f"=== SOLVER INPUT DATA ===")
+            logging.info(f"Members: {len(members)} - {[m['name'] for m in members]}")
+            logging.info(f"Shifts: {len(shifts)} - {[s['name'] for s in shifts]}")
+            logging.info(f"Month: {month}, Year: {year}, Days: {days_in_month}")
+            logging.info(f"Constraints: {constraints}")
+            logging.info(f"Availability entries: {len(availability)}")
+            if availability:
+                logging.info(f"Sample availability: {availability[0] if availability else 'None'}")
+            logging.info(f"=== END INPUT DATA ===")
+            
             # Create the model
             self.model = cp_model.CpModel()
             self.solver = cp_model.CpSolver()
@@ -38,33 +49,50 @@ class ScheduleSolver:
                         x[m, s, d] = self.model.NewBoolVar(f'x_{m}_{s}_{d}')
             
             # 1. AVAILABILITY CONSTRAINTS (Hard constraints)
+            logging.info("Adding availability constraints...")
             self._add_availability_constraints(x, members, shifts, availability, days_in_month, month, year)
             
             # 2. NO CONSECUTIVE NIGHTS (Hard constraint)
+            logging.info("Adding consecutive nights constraint...")
             self._add_no_consecutive_nights_constraint(x, members, shifts, days_in_month)
             
             # 3. WORKERS PER SHIFT (Hard constraint)
+            logging.info("Adding workers per shift constraint...")
             self._add_workers_per_shift_constraint(x, members, shifts, days_in_month, constraints)
             
             # 4. MAX DAYS PER MONTH (Hard constraint)
+            logging.info("Adding max days per month constraint...")
             self._add_max_days_per_month_constraint(x, members, shifts, days_in_month, constraints)
             
             # 5. MIN REST HOURS (Hard constraint)
+            logging.info("Adding min rest hours constraint...")
             self._add_min_rest_hours_constraint(x, members, shifts, days_in_month, constraints)
             
             # 6. ALL WORKERS MUST BE ASSIGNED (Soft constraint with penalty)
+            logging.info("Adding assignment balance constraint...")
             self._add_assignment_balance_constraint(x, members, shifts, days_in_month)
             
             # 7. CUSTOM CONSTRAINTS (Dynamic based on team rules)
+            logging.info("Adding custom constraints...")
             self._add_custom_constraints(x, members, shifts, days_in_month, constraints)
             
             # Solve the model
+            logging.info("=== STARTING SOLVER ===")
+            logging.info(f"Model has {self.model.NumConstraints()} constraints and {self.model.NumVariables()} variables")
+            
             status = self.solver.Solve(self.model)
             
+            logging.info(f"Solver status: {status} ({self.solver.StatusName()})")
+            logging.info(f"Solver wall time: {self.solver.WallTime()} seconds")
+            
             if status == cp_model.OPTIMAL or status == cp_model.FEASIBLE:
+                logging.info("=== SOLVER SUCCESS ===")
                 return self._extract_solution(x, members, shifts, days_in_month, month, year)
             else:
-                return {"error": "No feasible solution found"}
+                logging.error(f"=== SOLVER FAILED ===")
+                logging.error(f"No feasible solution found. Status: {status}")
+                logging.error(f"Solver status name: {self.solver.StatusName()}")
+                return {"error": f"No feasible solution found. Solver status: {self.solver.StatusName()}"}
                 
         except Exception as e:
             logging.error(f"Error solving schedule: {str(e)}")
@@ -76,7 +104,10 @@ class ScheduleSolver:
         if not isinstance(availability, list):
             logging.warning(f"Availability is not a list: {type(availability)}, skipping availability constraints")
             return
-            
+        
+        logging.info(f"Adding availability constraints for {len(members)} members, {len(shifts)} shifts, {days_in_month} days")
+        
+        constraints_added = 0
         for m in range(len(members)):
             for s in range(len(shifts)):
                 for d in range(days_in_month):
@@ -98,6 +129,10 @@ class ScheduleSolver:
                     if is_unavailable:
                         # Force assignment to 0 if unavailable
                         self.model.Add(x[m, s, d] == 0)
+                        constraints_added += 1
+                        logging.debug(f"Added constraint: {members[m]['name']} cannot work {shifts[s]['name']} on {date_str}")
+        
+        logging.info(f"Added {constraints_added} availability constraints")
     
     def _add_no_consecutive_nights_constraint(self, x, members, shifts, days_in_month):
         """Add constraint to prevent consecutive night shifts (only for night shifts)"""
@@ -108,21 +143,31 @@ class ScheduleSolver:
     def _add_workers_per_shift_constraint(self, x, members, shifts, days_in_month, constraints):
         """Ensure correct number of workers per shift"""
         workers_per_shift = constraints.get('workers_per_shift', 1)
+        logging.info(f"Adding workers per shift constraint: {workers_per_shift} workers per shift")
         
+        constraints_added = 0
         for s in range(len(shifts)):
             for d in range(days_in_month):
                 # Sum of workers assigned to this shift on this day should equal workers_per_shift
                 constraint = sum(x[m, s, d] for m in range(len(members))) == workers_per_shift
                 self.model.Add(constraint)
+                constraints_added += 1
+        
+        logging.info(f"Added {constraints_added} workers per shift constraints")
     
     def _add_max_days_per_month_constraint(self, x, members, shifts, days_in_month, constraints):
         """Limit maximum days per month per worker"""
         max_days = constraints.get('max_days_per_month', 31)
+        logging.info(f"Adding max days per month constraint: {max_days} days per worker")
         
+        constraints_added = 0
         for m in range(len(members)):
             # Sum of all assignments for this member should be <= max_days
             total_assignments = sum(x[m, s, d] for s in range(len(shifts)) for d in range(days_in_month))
             self.model.Add(total_assignments <= max_days)
+            constraints_added += 1
+        
+        logging.info(f"Added {constraints_added} max days per month constraints")
     
     def _add_min_rest_hours_constraint(self, x, members, shifts, days_in_month, constraints):
         """Ensure minimum rest hours between shifts"""
