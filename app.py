@@ -19,9 +19,20 @@ class ScheduleSolver:
             members = team_data['members']
             shifts = team_data['shifts']
             availability = team_data['availability']
-            constraints = team_data['constraints']
+            basic_constraints = team_data.get('basic_constraints', {})
+            custom_constraints = team_data.get('custom_constraints', [])
             month = team_data['month']
             year = team_data['year']
+            
+            # Merge constraints for backward compatibility
+            constraints = {
+                'max_consecutive_days': basic_constraints.get('max_consecutive_days', 30),
+                'min_rest_hours': basic_constraints.get('min_rest_hours', 8),
+                'max_days_per_month': basic_constraints.get('max_days_per_month', 20),
+                'workers_per_shift': basic_constraints.get('workers_per_shift', 2),
+                'shift_specific_workers': basic_constraints.get('shift_specific_workers', {}),
+                'custom_constraints': custom_constraints,
+            }
             
             # Get month details
             days_in_month = (datetime(year, month + 1, 1) - datetime(year, month, 1)).days
@@ -31,7 +42,9 @@ class ScheduleSolver:
             logging.info(f"Members: {len(members)} - {[m['name'] for m in members]}")
             logging.info(f"Shifts: {len(shifts)} - {[s['name'] for s in shifts]}")
             logging.info(f"Month: {month}, Year: {year}, Days: {days_in_month}")
-            logging.info(f"Constraints: {constraints}")
+            logging.info(f"Basic Constraints: {basic_constraints}")
+            logging.info(f"Custom Constraints: {len(custom_constraints)} items")
+            logging.info(f"Merged Constraints: {constraints}")
             logging.info(f"Availability entries: {len(availability)}")
             if availability:
                 logging.info(f"Sample availability: {availability[0] if availability else 'None'}")
@@ -220,68 +233,31 @@ class ScheduleSolver:
     
     def _add_custom_constraints(self, x, members, shifts, days_in_month, constraints):
         """Add custom constraints based on team rules"""
-        parsed_constraints = constraints.get('parsed_custom_constraints', {})
-        ai_constraints = constraints.get('ai_translated_constraints', [])  # New field for AI constraints
+        custom_constraints = constraints.get('custom_constraints', [])
         
         constraints_added = 0
         
         # Log what we're working with
-        logging.info(f"Processing custom constraints: parsed={len(parsed_constraints) if parsed_constraints else 0} rules")
-        logging.info(f"Processing AI-translated constraints: {len(ai_constraints) if ai_constraints else 0} constraints")
+        logging.info(f"Processing custom constraints: {len(custom_constraints) if custom_constraints else 0} constraints")
         
-        # Process parsed constraints if available (legacy format)
-        if parsed_constraints and isinstance(parsed_constraints, dict):
-            constraints_added += self._process_parsed_constraints(x, members, shifts, days_in_month, parsed_constraints)
+        # Process custom constraints from custom_constraints table
+        if custom_constraints and isinstance(custom_constraints, list):
+            constraints_added += self._process_custom_constraints(x, members, shifts, days_in_month, custom_constraints)
         
-        # Process AI-translated constraints (new format)
-        if ai_constraints and isinstance(ai_constraints, list):
-            constraints_added += self._process_ai_translated_constraints(x, members, shifts, days_in_month, ai_constraints)
-        
-        if not parsed_constraints and not ai_constraints:
+        if not custom_constraints:
             logging.info("No custom constraints available - skipping custom constraints")
         
         logging.info(f"Added {constraints_added} custom constraints total")
     
-    def _process_parsed_constraints(self, x, members, shifts, days_in_month, parsed_constraints):
-        """Process structured constraints from the constraint parser"""
+    def _process_custom_constraints(self, x, members, shifts, days_in_month, custom_constraints):
+        """Process custom constraints from custom_constraints table"""
         constraints_added = 0
         
-        # Process shift rules
-        shift_rules = parsed_constraints.get('shift_rules', [])
-        for rule in shift_rules:
-            rule_type = rule.get('type', '')
-            if rule_type == 'no_consecutive_nights' and rule.get('enabled', False):
-                constraints_added += self._add_no_consecutive_nights_constraint(x, members, shifts, days_in_month, rule)
-            elif rule_type == 'min_rest_hours':
-                constraints_added += self._add_min_rest_hours_constraint(x, members, shifts, days_in_month, rule)
-        
-        # Process member rules
-        member_rules = parsed_constraints.get('member_rules', [])
-        for rule in member_rules:
-            rule_type = rule.get('type', '')
-            if rule_type == 'date_restriction':
-                constraints_added += self._add_date_restriction_constraint(x, members, shifts, days_in_month, rule)
-            elif rule_type == 'shift_preference':
-                constraints_added += self._add_shift_preference_constraint(x, members, shifts, days_in_month, rule)
-        
-        # Process team rules
-        team_rules = parsed_constraints.get('team_rules', [])
-        for rule in team_rules:
-            rule_type = rule.get('type', '')
-            if rule_type == 'fair_distribution' and rule.get('enabled', False):
-                constraints_added += self._add_fair_distribution_constraint(x, members, shifts, days_in_month, rule)
-        
-        return constraints_added
-    
-    def _process_ai_translated_constraints(self, x, members, shifts, days_in_month, ai_constraints):
-        """Process modern AI-translated constraints from custom_constraints table"""
-        constraints_added = 0
-        
-        if not ai_constraints or not isinstance(ai_constraints, list):
-            logging.info("No AI-translated constraints to process")
+        if not custom_constraints or not isinstance(custom_constraints, list):
+            logging.info("No custom constraints to process")
             return constraints_added
         
-        for constraint in ai_constraints:
+        for constraint in custom_constraints:
             if constraint.get('status') != 'translated':
                 continue
                 
@@ -289,11 +265,10 @@ class ScheduleSolver:
             if not ai_translation:
                 continue
                 
-            constraint_type = ai_translation.get('constraint_type', '')
+            constraint_type = ai_translation.get('type', '')
             parameters = ai_translation.get('parameters', {})
-            priority = ai_translation.get('priority', 'medium')
             
-            logging.info(f"Processing AI-translated constraint: {constraint_type} (priority: {priority})")
+            logging.info(f"Processing custom constraint: {constraint_type}")
             
             try:
                 if constraint_type == 'consecutive_shift_restriction':
@@ -307,13 +282,13 @@ class ScheduleSolver:
                 elif constraint_type == 'shift_rotation':
                     constraints_added += self._add_ai_shift_rotation_constraint(x, members, shifts, days_in_month, parameters)
                 else:
-                    logging.warning(f"Unknown AI constraint type: {constraint_type}")
+                    logging.warning(f"Unknown custom constraint type: {constraint_type}")
                     
             except Exception as e:
-                logging.error(f"Error processing AI constraint {constraint_type}: {e}")
+                logging.error(f"Error processing custom constraint {constraint_type}: {e}")
                 continue
         
-        logging.info(f"Added {constraints_added} AI-translated constraints")
+        logging.info(f"Added {constraints_added} custom constraints")
         return constraints_added
     
     def _add_no_consecutive_nights_constraint(self, x, members, shifts, days_in_month, rule):
@@ -636,8 +611,8 @@ class ScheduleSolver:
                     if self.solver.Value(x[m, s, d]) == 1:
                         date_str = f"{year}-{month:02d}-{d+1:02d}"
                         assignments.append({
-                            "member_name": members[m]['name'],
-                            "shift_name": shifts[s]['name'],
+                            "user_id": members[m]['id'],
+                            "shift_id": shifts[s]['id'],
                             "date": date_str
                         })
         
@@ -665,13 +640,17 @@ def solve_schedule():
             return jsonify({"error": "No data provided"}), 400
         
         # Validate required fields
-        required_fields = ['members', 'shifts', 'availability', 'constraints', 'month', 'year']
+        required_fields = ['members', 'shifts', 'availability', 'month', 'year']
         for field in required_fields:
             if field not in data:
                 return jsonify({"error": f"Missing required field: {field}"}), 400
         
+        # Check for either basic_constraints or constraints (for backward compatibility)
+        if 'basic_constraints' not in data and 'constraints' not in data:
+            return jsonify({"error": "Missing required field: basic_constraints or constraints"}), 400
+        
         logging.info(f"Solving schedule for team with {len(data['members'])} members, {len(data['shifts'])} shifts")
-        logging.info(f"Data types - members: {type(data['members'])}, shifts: {type(data['shifts'])}, availability: {type(data['availability'])}, constraints: {type(data['constraints'])}")
+        logging.info(f"Data types - members: {type(data['members'])}, shifts: {type(data['shifts'])}, availability: {type(data['availability'])}")
         logging.info(f"Availability data: {data['availability']}")
         
         # Solve the schedule
@@ -680,7 +659,15 @@ def solve_schedule():
         if "error" in result:
             return jsonify(result), 400
         
-        return jsonify(result)
+        return jsonify({
+            "success": True,
+            "assignments": result["assignments"],
+            "stats": {
+                "solver_status": result.get("solver_status", "UNKNOWN"),
+                "solve_time": result.get("solve_time", 0),
+                "assignments_count": len(result.get("assignments", []))
+            }
+        })
         
     except Exception as e:
         logging.error(f"Error in solve endpoint: {str(e)}")

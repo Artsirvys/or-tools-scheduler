@@ -54,8 +54,8 @@ POST /solve
 ```json
 {
   "members": [
-    {"id": "user1", "name": "John Doe"},
-    {"id": "user2", "name": "Jane Smith"}
+    {"id": "user1", "name": "John Doe", "experience_level": 1},
+    {"id": "user2", "name": "Jane Smith", "experience_level": 2}
   ],
   "shifts": [
     {"id": "shift1", "name": "Morning", "start_time": "08:00", "end_time": "16:00"},
@@ -64,12 +64,20 @@ POST /solve
   "availability": [
     {"user_id": "user1", "shift_id": "shift1", "date": "2024-01-15", "status": "available"}
   ],
-  "constraints": {
+  "basic_constraints": {
     "workers_per_shift": 2,
     "max_consecutive_days": 5,
     "min_rest_hours": 8,
-    "max_days_per_month": 20
+    "max_days_per_month": 20,
+    "shift_specific_workers": {}
   },
+  "custom_constraints": [
+    {
+      "raw_text": "No night shifts for pregnant staff",
+      "ai_translation": {"type": "restriction", "condition": "pregnant", "shifts": ["night"]},
+      "status": "translated"
+    }
+  ],
   "month": 1,
   "year": 2024
 }
@@ -78,15 +86,19 @@ POST /solve
 **Response:**
 ```json
 {
+  "success": true,
   "assignments": [
     {
-      "member_name": "John Doe",
-      "shift_name": "Morning",
+      "user_id": "user1",
+      "shift_id": "shift1",
       "date": "2024-01-15"
     }
   ],
-  "solver_status": "OPTIMAL",
-  "solve_time": 0.5
+  "stats": {
+    "solver_status": "OPTIMAL",
+    "solve_time": 0.5,
+    "assignments_count": 1
+  }
 }
 ```
 
@@ -107,9 +119,9 @@ POST /solve
 
 The service is designed to work with your existing Next.js app:
 
-1. **New API Route**: `/api/generateScheduleOR` calls this service
-2. **Existing Route**: `/api/generateSchedule` remains unchanged
-3. **Seamless Switch**: You can test both approaches side by side
+1. **API Route**: `/api/generateSchedule` calls this service
+2. **Data Fetching**: Fetches data from Supabase tables (custom_constraints, basic_constraints, availability, team_members, users)
+3. **Direct Integration**: No two-phase process needed since AI translation is already done
 
 ## Troubleshooting
 
