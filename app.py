@@ -54,6 +54,14 @@ class ScheduleSolver:
             self.model = cp_model.CpModel()
             self.solver = cp_model.CpSolver()
             
+            # Add dummy worker for unassigned slots
+            dummy_worker = {
+                "id": "unassigned",
+                "name": "Unassigned"
+            }
+            members.append(dummy_worker)
+            dummy_index = len(members) - 1
+            
             # Create variables: x[m][s][d] = 1 if member m is assigned to shift s on day d
             x = {}
             for m in range(len(members)):
@@ -83,6 +91,15 @@ class ScheduleSolver:
             # 5. CUSTOM CONSTRAINTS (Dynamic based on team rules)
             logging.info("Adding custom constraints...")
             self._add_custom_constraints(x, members, shifts, days_in_month, constraints)
+            
+            # 6. OBJECTIVE: Minimize unassigned shifts
+            logging.info("Adding objective to minimize unassigned shifts...")
+            unassigned_vars = []
+            for s in range(len(shifts)):
+                for d in range(days_in_month):
+                    unassigned_vars.append(x[dummy_index, s, d])
+            
+            self.model.Minimize(sum(unassigned_vars))
             
             # Solve the model
             logging.info("=== STARTING SOLVER ===")
@@ -150,6 +167,10 @@ class ScheduleSolver:
                         None
                     )
                     
+                    if members[m]["id"] == "unassigned":
+                        # Dummy worker is always available
+                        continue
+                        
                     if availability_entry:
                         if availability_entry['status'] == 'unavailable':
                             # Force assignment to 0 if unavailable
@@ -192,9 +213,9 @@ class ScheduleSolver:
         constraints_added = 0
         for s in range(len(shifts)):
             for d in range(days_in_month):
-                # Sum of workers assigned to this shift on this day should equal workers_per_shift
-                constraint = sum(x[m, s, d] for m in range(len(members))) == workers_per_shift
-                self.model.Add(constraint)
+                # Sum of workers assigned to this shift on this day should be <= workers_per_shift
+                shift_sum = sum(x[m, s, d] for m in range(len(members)))
+                self.model.Add(shift_sum <= workers_per_shift)
                 constraints_added += 1
         
         logging.info(f"Added {constraints_added} workers per shift constraints")
@@ -610,11 +631,19 @@ class ScheduleSolver:
                 for d in range(days_in_month):
                     if self.solver.Value(x[m, s, d]) == 1:
                         date_str = f"{year}-{month:02d}-{d+1:02d}"
-                        assignments.append({
-                            "user_id": members[m]['id'],
-                            "shift_id": shifts[s]['id'],
-                            "date": date_str
-                        })
+                        if members[m]['id'] == "unassigned":
+                            assignments.append({
+                                "user_id": None,
+                                "shift_id": shifts[s]['id'],
+                                "date": date_str,
+                                "status": "unassigned"
+                            })
+                        else:
+                            assignments.append({
+                                "user_id": members[m]['id'],
+                                "shift_id": shifts[s]['id'],
+                                "date": date_str
+                            })
         
         return {
             "assignments": assignments,
