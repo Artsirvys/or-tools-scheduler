@@ -27,7 +27,6 @@ class ScheduleSolver:
             # Merge constraints for backward compatibility
             constraints = {
                 'max_consecutive_days': basic_constraints.get('max_consecutive_days', 30),
-                'min_rest_hours': basic_constraints.get('min_rest_hours', 8),
                 'max_days_per_month': basic_constraints.get('max_days_per_month', 20),
                 'workers_per_shift': basic_constraints.get('workers_per_shift', 2),
                 'shift_specific_workers': basic_constraints.get('shift_specific_workers', {}),
@@ -296,8 +295,6 @@ class ScheduleSolver:
                     constraints_added += self._add_ai_consecutive_shift_restriction(x, members, shifts, days_in_month, parameters)
                 elif constraint_type == 'workers_per_shift':
                     constraints_added += self._add_ai_workers_per_shift_constraint(x, members, shifts, days_in_month, parameters)
-                elif constraint_type == 'min_rest_hours':
-                    constraints_added += self._add_ai_min_rest_hours_constraint(x, members, shifts, days_in_month, parameters)
                 elif constraint_type == 'shift_preference':
                     constraints_added += self._add_ai_shift_preference_constraint(x, members, shifts, days_in_month, parameters)
                 elif constraint_type == 'shift_rotation':
@@ -567,30 +564,6 @@ class ScheduleSolver:
         
         return constraints_added
     
-    def _add_ai_min_rest_hours_constraint(self, x, members, shifts, days_in_month, parameters):
-        """Add minimum rest hours constraint between shifts"""
-        constraints_added = 0
-        
-        min_hours = parameters.get('min_hours', 12)
-        applies_to = parameters.get('applies_to', 'all_shifts')
-        
-        logging.info(f"Adding minimum rest hours constraint: {min_hours}h between shifts (applies to: {applies_to})")
-        
-        # This is a simplified implementation - in practice you'd need to track shift times
-        # and ensure proper rest periods between consecutive shifts for the same worker
-        
-        # For now, we'll add a basic constraint that prevents consecutive day assignments
-        # This is a rough approximation of rest hours
-        for m in range(len(members)):
-            for d in range(days_in_month - 1):
-                # If assigned to any shift on day d, can't be assigned to any shift on day d+1
-                # This ensures at least ~24h rest (simplified)
-                day_d_sum = sum(x[m, s, d] for s in range(len(shifts)))
-                day_d_plus_1_sum = sum(x[m, s, d + 1] for s in range(len(shifts)))
-                self.model.Add(day_d_sum + day_d_plus_1_sum <= 1)
-                constraints_added += 1
-        
-        return constraints_added
     
     def _add_ai_shift_preference_constraint(self, x, members, shifts, days_in_month, parameters):
         """Add shift preference constraints (soft constraints)"""

@@ -67,7 +67,6 @@ POST /solve
   "basic_constraints": {
     "workers_per_shift": 2,
     "max_consecutive_days": 5,
-    "min_rest_hours": 8,
     "max_days_per_month": 20,
     "shift_specific_workers": {}
   },
