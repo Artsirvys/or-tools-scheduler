@@ -606,14 +606,8 @@ class ScheduleSolver:
                 for d in range(days_in_month):
                     if self.solver.Value(x[m, s, d]) == 1:
                         date_str = f"{year}-{month:02d}-{d+1:02d}"
-                        if members[m]['id'] == "unassigned":
-                            assignments.append({
-                                "user_id": None,
-                                "shift_id": shifts[s]['id'],
-                                "date": date_str,
-                                "status": "unassigned"
-                            })
-                        else:
+                        # Only include assignments with real users (exclude dummy "unassigned" worker)
+                        if members[m]['id'] != "unassigned":
                             assignments.append({
                                 "user_id": members[m]['id'],
                                 "shift_id": shifts[s]['id'],
