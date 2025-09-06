@@ -284,17 +284,22 @@ class ScheduleSolver:
             logging.info(f"DEBUG: Constraint structure: {constraint}")
             
             # Handle both old format (ai_translation) and new format (direct fields)
+            # Priority: constraint_type field first, then ai_translation.type
+            constraint_type = constraint.get('constraint_type', '')
+            
+            # Get parameters from ai_translation if it exists, otherwise from direct field
             if 'ai_translation' in constraint:
-                # Old format: constraint has ai_translation field
+                ai_translation = constraint.get('ai_translation', {})
+                parameters = ai_translation.get('parameters', {})
+            else:
+                parameters = constraint.get('parameters', {})
+            
+            if not constraint_type and 'ai_translation' in constraint:
+                # Fallback to old format if constraint_type is empty
                 if constraint.get('status') != 'translated':
                     continue
                 ai_translation = constraint.get('ai_translation', {})
                 constraint_type = ai_translation.get('type', '')
-                parameters = ai_translation.get('parameters', {})
-            else:
-                # New format: constraint has direct fields
-                constraint_type = constraint.get('constraint_type', '')
-                parameters = constraint.get('parameters', {})
             
             logging.info(f"Processing custom constraint: '{constraint_type}'")
             
