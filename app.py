@@ -284,22 +284,27 @@ class ScheduleSolver:
             logging.info(f"DEBUG: Constraint structure: {constraint}")
             
             # Handle both old format (ai_translation) and new format (direct fields)
-            # Priority: constraint_type field first, then ai_translation.type
+            # Priority: constraint_type field first, then ai_translation.constraint_type
             constraint_type = constraint.get('constraint_type', '')
+            logging.info(f"DEBUG: Top-level constraint_type: '{constraint_type}'")
             
             # Get parameters from ai_translation if it exists, otherwise from direct field
             if 'ai_translation' in constraint:
                 ai_translation = constraint.get('ai_translation', {})
                 parameters = ai_translation.get('parameters', {})
+                logging.info(f"DEBUG: ai_translation constraint_type: '{ai_translation.get('constraint_type', '')}'")
+                
+                # If constraint_type is empty at top level, get it from ai_translation
+                if not constraint_type:
+                    constraint_type = ai_translation.get('constraint_type', '')
+                    logging.info(f"DEBUG: Got constraint_type from ai_translation: '{constraint_type}'")
             else:
                 parameters = constraint.get('parameters', {})
             
-            if not constraint_type and 'ai_translation' in constraint:
-                # Fallback to old format if constraint_type is empty
-                if constraint.get('status') != 'translated':
-                    continue
-                ai_translation = constraint.get('ai_translation', {})
-                constraint_type = ai_translation.get('type', '')
+            # Skip if constraint is not translated
+            if constraint.get('status') != 'translated':
+                logging.info(f"Skipping constraint with status: {constraint.get('status')}")
+                continue
             
             logging.info(f"Processing custom constraint: '{constraint_type}'")
             
