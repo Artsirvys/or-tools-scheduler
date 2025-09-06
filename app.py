@@ -91,14 +91,9 @@ class ScheduleSolver:
             logging.info("Adding custom constraints...")
             self._add_custom_constraints(x, members, shifts, days_in_month, constraints)
             
-            # 6. OBJECTIVE: Minimize unassigned shifts
-            logging.info("Adding objective to minimize unassigned shifts...")
-            unassigned_vars = []
-            for s in range(len(shifts)):
-                for d in range(days_in_month):
-                    unassigned_vars.append(x[dummy_index, s, d])
-            
-            self.model.Minimize(sum(unassigned_vars))
+            # 6. MULTI-OBJECTIVE OPTIMIZATION: Balance multiple objectives
+            logging.info("Adding multi-objective optimization...")
+            self._add_multi_objective(x, members, shifts, days_in_month, availability, constraints, dummy_index, month, year)
             
             # Solve the model
             logging.info("=== STARTING SOLVER ===")
@@ -124,7 +119,14 @@ class ScheduleSolver:
             
             if status == cp_model.OPTIMAL or status == cp_model.FEASIBLE:
                 logging.info("=== SOLVER SUCCESS ===")
-                return self._extract_solution(x, members, shifts, days_in_month, month, year)
+                result = self._extract_solution(x, members, shifts, days_in_month, month, year)
+                
+                # Check if solution has zero assignments and use fallback if needed
+                if result and len(result.get("assignments", [])) == 0:
+                    logging.warning("Solver found optimal solution with zero assignments - using fallback")
+                    return self._solve_with_fallback(x, members, shifts, days_in_month, month, year)
+                
+                return result
             else:
                 logging.error(f"=== SOLVER FAILED ===")
                 logging.error(f"No feasible solution found. Status: {status}")
@@ -622,6 +624,120 @@ class ScheduleSolver:
             "assignments": assignments,
             "solver_status": "OPTIMAL" if self.solver.StatusName() == "OPTIMAL" else "FEASIBLE",
             "solve_time": self.solver.WallTime()
+        }
+
+    def _add_multi_objective(self, x, members, shifts, days_in_month, availability, constraints, dummy_index, month, year):
+        """Add multi-objective optimization to balance multiple scheduling goals"""
+        logging.info("Setting up multi-objective optimization...")
+        
+        # 1. PRIMARY OBJECTIVE: Maximize total assignments (fill shifts)
+        total_assignments = sum(x[m, s, d] for m in range(len(members)) for s in range(len(shifts)) for d in range(days_in_month))
+        logging.info(f"Primary objective: Maximize {len(members) * len(shifts) * days_in_month} possible assignments")
+        
+        # 2. SECONDARY OBJECTIVE: Minimize unassigned shifts (penalty for dummy worker)
+        unassigned_penalty = sum(x[dummy_index, s, d] for s in range(len(shifts)) for d in range(days_in_month))
+        logging.info(f"Secondary objective: Minimize {len(shifts) * days_in_month} possible unassigned shifts")
+        
+        # 3. TERTIARY OBJECTIVE: Maximize priority assignments
+        priority_bonus = 0
+        priority_count = 0
+        for m in range(len(members) - 1):  # Exclude dummy worker
+            for s in range(len(shifts)):
+                for d in range(days_in_month):
+                    if self._is_priority_assignment(m, s, d, availability, members, shifts, days_in_month, month, year):
+                        priority_bonus += x[m, s, d]
+                        priority_count += 1
+        
+        logging.info(f"Tertiary objective: Maximize {priority_count} priority assignments")
+        
+        # 4. QUATERNARY OBJECTIVE: Balance workload distribution
+        workload_variance = self._calculate_workload_variance(x, members, shifts, days_in_month)
+        logging.info(f"Quaternary objective: Minimize workload variance")
+        
+        # Multi-objective function with weighted priorities
+        # Weights: assignments(1000) > priority(100) > unassigned(10) > variance(1)
+        objective = (
+            total_assignments * 1000 +      # Primary: maximize assignments
+            priority_bonus * 100 +          # Secondary: prefer priority assignments
+            -unassigned_penalty * 10 +      # Tertiary: minimize unassigned shifts
+            -workload_variance              # Quaternary: balance workload
+        )
+        
+        self.model.Maximize(objective)
+        logging.info("Multi-objective optimization configured successfully")
+
+    def _is_priority_assignment(self, m, s, d, availability, members, shifts, days_in_month, month, year):
+        """Check if this assignment should get priority bonus"""
+        try:
+            member_id = members[m]['id']
+            shift_id = shifts[s]['id']
+            # Use the same date format as in availability constraints
+            date_str = f"{year}-{month:02d}-{d+1:02d}"
+            
+            # Find availability entry for this member, shift, and date
+            availability_entry = next(
+                (a for a in availability 
+                 if a['user_id'] == member_id and 
+                    a['shift_id'] == shift_id and 
+                    a['date'] == date_str),
+                None
+            )
+            
+            # Return True if status is 'priority'
+            if availability_entry and availability_entry.get('status') == 'priority':
+                return True
+                
+        except (KeyError, IndexError, TypeError) as e:
+            logging.debug(f"Error checking priority assignment: {e}")
+            
+        return False
+
+    def _calculate_workload_variance(self, x, members, shifts, days_in_month):
+        """Calculate workload distribution variance to balance assignments"""
+        try:
+            # Calculate total assignments per member (excluding dummy worker)
+            member_assignments = []
+            for m in range(len(members) - 1):  # Exclude dummy worker
+                total_for_member = sum(x[m, s, d] for s in range(len(shifts)) for d in range(days_in_month))
+                member_assignments.append(total_for_member)
+            
+            if not member_assignments:
+                return 0
+                
+            # Calculate variance (simplified - just sum of squared differences from mean)
+            mean_assignments = sum(member_assignments) / len(member_assignments)
+            variance = sum((assignments - mean_assignments) ** 2 for assignments in member_assignments)
+            
+            return variance
+            
+        except (IndexError, TypeError) as e:
+            logging.debug(f"Error calculating workload variance: {e}")
+            return 0
+
+    def _solve_with_fallback(self, x, members, shifts, days_in_month, month, year):
+        """Fallback method when optimal solution has zero assignments"""
+        logging.warning("Optimal solution has zero assignments - creating fallback schedule")
+        
+        assignments = []
+        
+        # Create a simple round-robin assignment for first week
+        member_index = 0
+        for d in range(min(7, days_in_month)):  # First week only
+            for s in range(len(shifts)):
+                if member_index < len(members) - 1:  # Exclude dummy worker
+                    date_str = f"{year}-{month:02d}-{d+1:02d}"
+                    assignments.append({
+                        "user_id": members[member_index]['id'],
+                        "shift_id": shifts[s]['id'],
+                        "date": date_str
+                    })
+                    member_index = (member_index + 1) % (len(members) - 1)
+        
+        logging.info(f"Created fallback schedule with {len(assignments)} assignments")
+        return {
+            "assignments": assignments,
+            "solver_status": "FALLBACK",
+            "solve_time": 0
         }
 
 # Global solver instance
