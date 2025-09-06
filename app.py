@@ -280,6 +280,9 @@ class ScheduleSolver:
             return constraints_added
         
         for constraint in custom_constraints:
+            # Debug: Log the actual constraint structure
+            logging.info(f"DEBUG: Constraint structure: {constraint}")
+            
             # Handle both old format (ai_translation) and new format (direct fields)
             if 'ai_translation' in constraint:
                 # Old format: constraint has ai_translation field
@@ -293,7 +296,7 @@ class ScheduleSolver:
                 constraint_type = constraint.get('constraint_type', '')
                 parameters = constraint.get('parameters', {})
             
-            logging.info(f"Processing custom constraint: {constraint_type}")
+            logging.info(f"Processing custom constraint: '{constraint_type}'")
             
             try:
                 if constraint_type == 'consecutive_shift_restriction':
