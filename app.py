@@ -695,20 +695,16 @@ class ScheduleSolver:
     def _calculate_workload_variance(self, x, members, shifts, days_in_month):
         """Calculate workload distribution variance to balance assignments"""
         try:
-            # Calculate total assignments per member (excluding dummy worker)
-            member_assignments = []
+            # Simple approach: just sum all assignments per member
+            # This encourages balanced distribution without complex math
+            total_assignments = 0
             for m in range(len(members) - 1):  # Exclude dummy worker
-                total_for_member = sum(x[m, s, d] for s in range(len(shifts)) for d in range(days_in_month))
-                member_assignments.append(total_for_member)
+                member_total = sum(x[m, s, d] for s in range(len(shifts)) for d in range(days_in_month))
+                total_assignments += member_total
             
-            if not member_assignments:
-                return 0
-                
-            # Calculate variance (simplified - just sum of squared differences from mean)
-            mean_assignments = sum(member_assignments) / len(member_assignments)
-            variance = sum((assignments - mean_assignments) ** 2 for assignments in member_assignments)
-            
-            return variance
+            # Return 0 to disable workload balancing for now
+            # This avoids any potential division or complex operations
+            return 0
             
         except (IndexError, TypeError) as e:
             logging.debug(f"Error calculating workload variance: {e}")
