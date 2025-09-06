@@ -280,15 +280,18 @@ class ScheduleSolver:
             return constraints_added
         
         for constraint in custom_constraints:
-            if constraint.get('status') != 'translated':
-                continue
-                
-            ai_translation = constraint.get('ai_translation', {})
-            if not ai_translation:
-                continue
-                
-            constraint_type = ai_translation.get('type', '')
-            parameters = ai_translation.get('parameters', {})
+            # Handle both old format (ai_translation) and new format (direct fields)
+            if 'ai_translation' in constraint:
+                # Old format: constraint has ai_translation field
+                if constraint.get('status') != 'translated':
+                    continue
+                ai_translation = constraint.get('ai_translation', {})
+                constraint_type = ai_translation.get('type', '')
+                parameters = ai_translation.get('parameters', {})
+            else:
+                # New format: constraint has direct fields
+                constraint_type = constraint.get('constraint_type', '')
+                parameters = constraint.get('parameters', {})
             
             logging.info(f"Processing custom constraint: {constraint_type}")
             
