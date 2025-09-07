@@ -317,6 +317,8 @@ class ScheduleSolver:
                     constraints_added += self._add_ai_shift_preference_constraint(x, members, shifts, days_in_month, parameters)
                 elif constraint_type == 'shift_rotation':
                     constraints_added += self._add_ai_shift_rotation_constraint(x, members, shifts, days_in_month, parameters)
+                elif constraint_type == 'shift_transition_restriction':
+                    constraints_added += self._add_shift_transition_restriction(x, members, shifts, days_in_month, parameters)
                 else:
                     logging.warning(f"Unknown custom constraint type: {constraint_type}")
                     
@@ -477,6 +479,51 @@ class ScheduleSolver:
         
         return constraints_added
     
+    def _add_shift_transition_restriction(self, x, members, shifts, days_in_month, parameters):
+        """Add constraint to prevent specific shift transitions (e.g., no day shift after night shift)"""
+        constraints_added = 0
+        
+        forbidden_transitions = parameters.get('forbidden_transitions', [])
+        
+        if not forbidden_transitions:
+            logging.warning("No forbidden transitions specified for shift_transition_restriction")
+            return constraints_added
+        
+        logging.info(f"Adding shift transition restrictions: {len(forbidden_transitions)} forbidden transitions")
+        
+        for transition in forbidden_transitions:
+            from_shift_id = transition.get('from_shift_id', '')
+            to_shift_id = transition.get('to_shift_id', '')
+            from_shift_name = transition.get('from_shift_name', '')
+            to_shift_name = transition.get('to_shift_name', '')
+            
+            # Find shift indices
+            from_shift_index = None
+            to_shift_index = None
+            
+            for i, shift in enumerate(shifts):
+                if shift.get('id') == from_shift_id:
+                    from_shift_index = i
+                if shift.get('id') == to_shift_id:
+                    to_shift_index = i
+            
+            if from_shift_index is None or to_shift_index is None:
+                logging.warning(f"Could not find shift indices for transition: {from_shift_name} -> {to_shift_name}")
+                continue
+            
+            logging.info(f"Adding transition restriction: {from_shift_name} -> {to_shift_name}")
+            
+            # Add constraint: if worker m is assigned to from_shift on day d, 
+            # they cannot be assigned to to_shift on day d+1
+            for m in range(len(members)):
+                for d in range(days_in_month - 1):  # -1 because we check d+1
+                    # If assigned to from_shift on day d, cannot be assigned to to_shift on day d+1
+                    # This translates to: x[m, from_shift_index, d] + x[m, to_shift_index, d+1] <= 1
+                    self.model.Add(x[m, from_shift_index, d] + x[m, to_shift_index, d+1] <= 1)
+                    constraints_added += 1
+        
+        logging.info(f"Added {constraints_added} shift transition constraints")
+        return constraints_added
     
     def _add_ai_workers_per_shift_constraint(self, x, members, shifts, days_in_month, parameters):
         """Add constraint for specific worker requirements per shift"""
