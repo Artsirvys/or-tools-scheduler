@@ -466,7 +466,9 @@ class ScheduleSolver:
         
         logging.info(f"Identified {len(target_shift_indices)} {shift_type} shifts: {[shifts[i].get('name') for i in target_shift_indices]}")
         
-        # Add constraint: no more than max_consecutive consecutive shifts of this type
+        # Add constraint: max_consecutive represents the MAXIMUM number of consecutive shifts allowed
+        # e.g., max_consecutive=1 means "no more than 1 consecutive" (1 allowed, not 2)
+        # e.g., max_consecutive=0 means "no consecutive" (0 allowed)
         for m in range(len(members)):
             for d in range(days_in_month - max_consecutive):
                 consecutive_sum = sum(x[m, s, d + i] for s in target_shift_indices for i in range(max_consecutive + 1))
