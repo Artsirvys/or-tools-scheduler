@@ -635,13 +635,18 @@ class ScheduleSolver:
         workload_variance = self._calculate_workload_variance(x, members, shifts, days_in_month)
         logging.info(f"Quaternary objective: Minimize workload variance")
         
+        # 5. QUINARY OBJECTIVE: Balance shift type distribution
+        shift_type_variance = self._calculate_shift_type_variance(x, members, shifts, days_in_month)
+        logging.info(f"Quinary objective: Minimize shift type variance")
+        
         # Multi-objective function with weighted priorities
-        # Weights: assignments(1000) > priority(100) > unassigned(10) > variance(1)
+        # Weights: assignments(1000) > priority(100) > unassigned(10) > workload_variance(5) > shift_type_variance(3)
         objective = (
             total_assignments * 1000 +      # Primary: maximize assignments
             priority_bonus * 100 +          # Secondary: prefer priority assignments
             -unassigned_penalty * 10 +      # Tertiary: minimize unassigned shifts
-            -workload_variance              # Quaternary: balance workload
+            -workload_variance * 5 +        # Quaternary: balance total workload
+            -shift_type_variance * 3        # Quinary: balance shift types
         )
         
         self.model.Maximize(objective)
@@ -674,21 +679,82 @@ class ScheduleSolver:
         return False
 
     def _calculate_workload_variance(self, x, members, shifts, days_in_month):
-        """Calculate workload distribution variance to balance assignments"""
+        """Calculate workload distribution variance to balance total assignments per member"""
         try:
-            # Simple approach: just sum all assignments per member
-            # This encourages balanced distribution without complex math
-            total_assignments = 0
-            for m in range(len(members) - 1):  # Exclude dummy worker
-                member_total = sum(x[m, s, d] for s in range(len(shifts)) for d in range(days_in_month))
-                total_assignments += member_total
+            if len(members) <= 1:
+                return 0
             
-            # Return 0 to disable workload balancing for now
-            # This avoids any potential division or complex operations
-            return 0
+            # Calculate total assignments per member (excluding dummy worker)
+            member_totals = []
+            for m in range(len(members) - 1):  # Exclude dummy worker
+                total = sum(x[m, s, d] for s in range(len(shifts)) for d in range(days_in_month))
+                member_totals.append(total)
+            
+            if not member_totals:
+                return 0
+            
+            # Calculate variance from mean
+            mean_total = sum(member_totals) / len(member_totals)
+            variance = sum((total - mean_total) ** 2 for total in member_totals) / len(member_totals)
+            
+            logging.debug(f"Workload variance: {variance} (member totals: {member_totals}, mean: {mean_total})")
+            return variance
             
         except (IndexError, TypeError) as e:
             logging.debug(f"Error calculating workload variance: {e}")
+            return 0
+
+    def _calculate_shift_type_variance(self, x, members, shifts, days_in_month):
+        """Calculate shift type distribution variance to balance shift types per member"""
+        try:
+            if len(members) <= 1 or len(shifts) <= 1:
+                return 0
+            
+            # Group shifts by type (using shift name patterns)
+            shift_types = {}
+            for s, shift in enumerate(shifts):
+                shift_name = shift.get('name', '').lower()
+                
+                # Determine shift type based on name patterns
+                if any(keyword in shift_name for keyword in ['morning', 'day', 'am']):
+                    shift_type = 'morning'
+                elif any(keyword in shift_name for keyword in ['afternoon', 'pm']):
+                    shift_type = 'afternoon'
+                elif any(keyword in shift_name for keyword in ['night', 'evening', 'overnight']):
+                    shift_type = 'night'
+                else:
+                    # If no pattern matches, use shift name as type
+                    shift_type = shift_name
+                
+                if shift_type not in shift_types:
+                    shift_types[shift_type] = []
+                shift_types[shift_type].append(s)
+            
+            if not shift_types:
+                return 0
+            
+            # Calculate variance for each shift type
+            total_variance = 0
+            for shift_type, shift_indices in shift_types.items():
+                # Count assignments per member for this shift type
+                member_counts = []
+                for m in range(len(members) - 1):  # Exclude dummy worker
+                    count = sum(x[m, s, d] for s in shift_indices for d in range(days_in_month))
+                    member_counts.append(count)
+                
+                if member_counts and len(member_counts) > 1:
+                    # Calculate variance for this shift type
+                    mean_count = sum(member_counts) / len(member_counts)
+                    variance = sum((count - mean_count) ** 2 for count in member_counts) / len(member_counts)
+                    total_variance += variance
+                    
+                    logging.debug(f"Shift type '{shift_type}' variance: {variance} (member counts: {member_counts}, mean: {mean_count})")
+            
+            logging.debug(f"Total shift type variance: {total_variance}")
+            return total_variance
+            
+        except (IndexError, TypeError) as e:
+            logging.debug(f"Error calculating shift type variance: {e}")
             return 0
 
     def _solve_with_fallback(self, x, members, shifts, days_in_month, month, year):
