@@ -423,40 +423,38 @@ class ScheduleSolver:
         # Get shift identifiers from AI translation
         shift_identifiers = parameters.get('shift_identifiers', {})
         target_names = shift_identifiers.get('names', [])
-        target_keywords = shift_identifiers.get('keywords', [])
-        target_time_ranges = shift_identifiers.get('time_ranges', [])
+        
+        # Get shift IDs from applies_to_shifts (most reliable method)
+        applies_to_shifts = parameters.get('applies_to_shifts', [])
         
         logging.info(f"Adding consecutive shift restriction: max {max_consecutive} consecutive {shift_type} shifts")
-        logging.info(f"Looking for shifts with: names={target_names}, keywords={target_keywords}, times={target_time_ranges}")
+        logging.info(f"Looking for shifts with: IDs={applies_to_shifts}, names={target_names}")
         
-        # Identify shifts of the specified type using multiple strategies
+        # Identify shifts of the specified type using prioritized strategies
         target_shift_indices = []
         for i, shift in enumerate(shifts):
-            shift_name = shift.get('name', '').lower()
-            shift_start = shift.get('start_time', '')
-            shift_end = shift.get('end_time', '')
+            shift_id = shift.get('id', '')
+            shift_name = shift.get('name', '')
             
             is_target_shift = False
             
-            # Strategy 1: Check if shift name is in target names
-            if shift.get('name') in target_names:
+            # Strategy 1: Check if shift ID is in applies_to_shifts (most reliable)
+            if shift_id in applies_to_shifts:
                 is_target_shift = True
-                logging.debug(f"Shift '{shift.get('name')}' matched by exact name")
+                logging.debug(f"Shift '{shift_name}' matched by ID: {shift_id}")
             
-            # Strategy 2: Check if shift name contains target keywords
-            elif any(keyword.lower() in shift_name for keyword in target_keywords):
+            # Strategy 2: Check if shift name exactly matches target names
+            elif shift_name in target_names:
                 is_target_shift = True
-                logging.debug(f"Shift '{shift.get('name')}' matched by keyword")
+                logging.debug(f"Shift '{shift_name}' matched by exact name")
             
-            # Strategy 3: Check if shift times fall within target ranges
-            elif self._is_shift_in_time_ranges(shift_start, shift_end, target_time_ranges):
-                is_target_shift = True
-                logging.debug(f"Shift '{shift.get('name')}' matched by time range")
-            
-            # Strategy 4: Fallback to intelligent time-based classification
-            elif self._classify_shift_by_time(shift_start, shift_end, shift_type):
-                is_target_shift = True
-                logging.debug(f"Shift '{shift.get('name')}' classified as {shift_type} by time")
+            # Strategy 3: Fallback to keyword matching only if no IDs/names provided
+            elif not applies_to_shifts and not target_names:
+                target_keywords = shift_identifiers.get('keywords', [])
+                shift_name_lower = shift_name.lower()
+                if any(keyword.lower() in shift_name_lower for keyword in target_keywords):
+                    is_target_shift = True
+                    logging.debug(f"Shift '{shift_name}' matched by keyword (fallback)")
             
             if is_target_shift:
                 target_shift_indices.append(i)
@@ -477,82 +475,6 @@ class ScheduleSolver:
         
         return constraints_added
     
-    def _is_shift_in_time_ranges(self, start_time, end_time, target_ranges):
-        """Check if shift times fall within any target time ranges"""
-        if not start_time or not end_time or not target_ranges:
-            return False
-        
-        try:
-            # Convert shift times to minutes for comparison
-            shift_start_minutes = self._time_to_minutes(start_time)
-            shift_end_minutes = self._time_to_minutes(end_time)
-            
-            for time_range in target_ranges:
-                if '-' in time_range:
-                    range_start, range_end = time_range.split('-')
-                    range_start_minutes = self._time_to_minutes(range_start)
-                    range_end_minutes = self._time_to_minutes(range_end)
-                    
-                    # Handle overnight shifts (e.g., 22:00-06:00)
-                    if range_start_minutes > range_end_minutes:
-                        # Overnight shift
-                        if (shift_start_minutes >= range_start_minutes or 
-                            shift_end_minutes <= range_end_minutes or
-                            shift_start_minutes <= range_end_minutes):
-                            return True
-                    else:
-                        # Same-day shift
-                        if (shift_start_minutes >= range_start_minutes and 
-                            shift_end_minutes <= range_end_minutes):
-                            return True
-            
-            return False
-        except Exception as e:
-            logging.warning(f"Error parsing time ranges: {e}")
-            return False
-    
-    def _classify_shift_by_time(self, start_time, end_time, shift_type):
-        """Intelligently classify shifts by time when other methods fail"""
-        if not start_time or not end_time:
-            return False
-        
-        try:
-            start_minutes = self._time_to_minutes(start_time)
-            end_minutes = self._time_to_minutes(end_time)
-            
-            if shift_type == 'night':
-                # Night shifts: typically 22:00-06:00 (22:00 = 1320 minutes, 06:00 = 360 minutes)
-                if start_minutes >= 1320 or end_minutes <= 360:
-                    return True
-            elif shift_type == 'day':
-                # Day shifts: typically 06:00-18:00 (06:00 = 360 minutes, 18:00 = 1080 minutes)
-                if 360 <= start_minutes <= 1080 and 360 <= end_minutes <= 1080:
-                    return True
-            elif shift_type == 'afternoon':
-                # Afternoon shifts: typically 12:00-20:00 (12:00 = 720 minutes, 20:00 = 1200 minutes)
-                if 720 <= start_minutes <= 1200 and 720 <= end_minutes <= 1200:
-                    return True
-            elif shift_type == 'morning':
-                # Morning shifts: typically 06:00-14:00 (06:00 = 360 minutes, 14:00 = 840 minutes)
-                if 360 <= start_minutes <= 840 and 360 <= end_minutes <= 840:
-                    return True
-            elif shift_type == 'evening':
-                # Evening shifts: typically 18:00-02:00 (18:00 = 1080 minutes, 02:00 = 120 minutes)
-                if start_minutes >= 1080 or end_minutes <= 120:
-                    return True
-            
-            return False
-        except Exception as e:
-            logging.warning(f"Error classifying shift by time: {e}")
-            return False
-    
-    def _time_to_minutes(self, time_str):
-        """Convert time string (HH:MM) to minutes since midnight"""
-        try:
-            hours, minutes = map(int, time_str.split(':'))
-            return hours * 60 + minutes
-        except Exception:
-            return 0
     
     def _add_ai_workers_per_shift_constraint(self, x, members, shifts, days_in_month, parameters):
         """Add constraint for specific worker requirements per shift"""
