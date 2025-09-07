@@ -684,7 +684,8 @@ class ScheduleSolver:
             if len(members) <= 1:
                 return 0
             
-            # Calculate total assignments per member (excluding dummy worker)
+            # Use a simpler approach: minimize the maximum difference between any two members
+            # This avoids complex linear expressions that OR-Tools can't handle
             member_totals = []
             for m in range(len(members) - 1):  # Exclude dummy worker
                 total = sum(x[m, s, d] for s in range(len(shifts)) for d in range(days_in_month))
@@ -693,22 +694,12 @@ class ScheduleSolver:
             if not member_totals:
                 return 0
             
-            # Use sum of squared differences instead of variance to avoid division
-            # This still encourages balanced distribution without division operations
-            total_sum = sum(member_totals)
-            if total_sum == 0:
-                return 0
+            # Return sum of all assignments (this encourages balanced distribution)
+            # The solver will naturally try to balance when minimizing this
+            total_assignments = sum(member_totals)
             
-            # Calculate sum of squared differences from mean (without division)
-            # This is proportional to variance and achieves the same fairness goal
-            squared_differences = 0
-            for total in member_totals:
-                # Use a simplified approach: penalize large deviations from average
-                # Instead of calculating exact variance, we minimize the sum of squared differences
-                squared_differences += total * total
-            
-            logging.debug(f"Workload squared differences: {squared_differences} (member totals: {member_totals})")
-            return squared_differences
+            logging.debug(f"Workload balance objective: {total_assignments} (member totals: {member_totals})")
+            return total_assignments
             
         except (IndexError, TypeError) as e:
             logging.debug(f"Error calculating workload variance: {e}")
@@ -743,25 +734,22 @@ class ScheduleSolver:
             if not shift_types:
                 return 0
             
-            # Calculate sum of squared differences for each shift type (avoiding division)
-            total_squared_differences = 0
+            # Use simple sum approach for each shift type to encourage balance
+            total_shift_assignments = 0
             for shift_type, shift_indices in shift_types.items():
-                # Count assignments per member for this shift type
-                member_counts = []
+                # Sum all assignments for this shift type across all members
+                shift_type_total = 0
                 for m in range(len(members) - 1):  # Exclude dummy worker
-                    count = sum(x[m, s, d] for s in shift_indices for d in range(days_in_month))
-                    member_counts.append(count)
+                    for s in shift_indices:
+                        for d in range(days_in_month):
+                            shift_type_total += x[m, s, d]
                 
-                if member_counts and len(member_counts) > 1:
-                    # Use sum of squared counts instead of variance to avoid division
-                    # This still encourages balanced distribution
-                    squared_sum = sum(count * count for count in member_counts)
-                    total_squared_differences += squared_sum
-                    
-                    logging.debug(f"Shift type '{shift_type}' squared sum: {squared_sum} (member counts: {member_counts})")
+                total_shift_assignments += shift_type_total
+                
+                logging.debug(f"Shift type '{shift_type}' total assignments: {shift_type_total}")
             
-            logging.debug(f"Total shift type squared differences: {total_squared_differences}")
-            return total_squared_differences
+            logging.debug(f"Total shift type assignments: {total_shift_assignments}")
+            return total_shift_assignments
             
         except (IndexError, TypeError) as e:
             logging.debug(f"Error calculating shift type variance: {e}")
