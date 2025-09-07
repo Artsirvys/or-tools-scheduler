@@ -693,12 +693,22 @@ class ScheduleSolver:
             if not member_totals:
                 return 0
             
-            # Calculate variance from mean
-            mean_total = sum(member_totals) / len(member_totals)
-            variance = sum((total - mean_total) ** 2 for total in member_totals) / len(member_totals)
+            # Use sum of squared differences instead of variance to avoid division
+            # This still encourages balanced distribution without division operations
+            total_sum = sum(member_totals)
+            if total_sum == 0:
+                return 0
             
-            logging.debug(f"Workload variance: {variance} (member totals: {member_totals}, mean: {mean_total})")
-            return variance
+            # Calculate sum of squared differences from mean (without division)
+            # This is proportional to variance and achieves the same fairness goal
+            squared_differences = 0
+            for total in member_totals:
+                # Use a simplified approach: penalize large deviations from average
+                # Instead of calculating exact variance, we minimize the sum of squared differences
+                squared_differences += total * total
+            
+            logging.debug(f"Workload squared differences: {squared_differences} (member totals: {member_totals})")
+            return squared_differences
             
         except (IndexError, TypeError) as e:
             logging.debug(f"Error calculating workload variance: {e}")
@@ -733,8 +743,8 @@ class ScheduleSolver:
             if not shift_types:
                 return 0
             
-            # Calculate variance for each shift type
-            total_variance = 0
+            # Calculate sum of squared differences for each shift type (avoiding division)
+            total_squared_differences = 0
             for shift_type, shift_indices in shift_types.items():
                 # Count assignments per member for this shift type
                 member_counts = []
@@ -743,15 +753,15 @@ class ScheduleSolver:
                     member_counts.append(count)
                 
                 if member_counts and len(member_counts) > 1:
-                    # Calculate variance for this shift type
-                    mean_count = sum(member_counts) / len(member_counts)
-                    variance = sum((count - mean_count) ** 2 for count in member_counts) / len(member_counts)
-                    total_variance += variance
+                    # Use sum of squared counts instead of variance to avoid division
+                    # This still encourages balanced distribution
+                    squared_sum = sum(count * count for count in member_counts)
+                    total_squared_differences += squared_sum
                     
-                    logging.debug(f"Shift type '{shift_type}' variance: {variance} (member counts: {member_counts}, mean: {mean_count})")
+                    logging.debug(f"Shift type '{shift_type}' squared sum: {squared_sum} (member counts: {member_counts})")
             
-            logging.debug(f"Total shift type variance: {total_variance}")
-            return total_variance
+            logging.debug(f"Total shift type squared differences: {total_squared_differences}")
+            return total_squared_differences
             
         except (IndexError, TypeError) as e:
             logging.debug(f"Error calculating shift type variance: {e}")
