@@ -645,8 +645,8 @@ class ScheduleSolver:
             total_assignments * 1000 +      # Primary: maximize assignments
             priority_bonus * 100 +          # Secondary: prefer priority assignments
             -unassigned_penalty * 10 +      # Tertiary: minimize unassigned shifts
-            -workload_variance * 5 +        # Quaternary: balance total workload
-            -shift_type_variance * 3        # Quinary: balance shift types
+            -workload_variance * 50 +        # Quaternary: balance total workload
+            -shift_type_variance * 30        # Quinary: balance shift types
         )
         
         self.model.Maximize(objective)
