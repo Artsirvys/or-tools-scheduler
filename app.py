@@ -319,6 +319,10 @@ class ScheduleSolver:
                     constraints_added += self._add_ai_shift_rotation_constraint(x, members, shifts, days_in_month, parameters)
                 elif constraint_type == 'shift_transition_restriction':
                     constraints_added += self._add_shift_transition_restriction(x, members, shifts, days_in_month, parameters)
+                elif constraint_type == 'workload_distribution':
+                    # This constraint type is handled by the multi-objective optimization
+                    # No additional constraints needed - just log for clarity
+                    logging.info(f"Workload distribution constraint handled by multi-objective optimization")
                 else:
                     logging.warning(f"Unknown custom constraint type: {constraint_type}")
                     
@@ -693,12 +697,21 @@ class ScheduleSolver:
             if not member_totals or len(member_totals) <= 1:
                 return 0
             
-            # Calculate actual variance to penalize unequal distribution
-            average = sum(member_totals) / len(member_totals)
-            variance = sum((total - average) ** 2 for total in member_totals)
+            # Use sum of squared differences instead of variance to avoid division
+            # This still penalizes unequal distribution without requiring division
+            total_assignments = sum(member_totals)
+            num_members = len(member_totals)
             
-            logging.debug(f"Workload variance: {variance:.2f} (member totals: {member_totals}, average: {average:.2f})")
-            return variance
+            # Calculate sum of squared differences from equal distribution
+            # Each member should ideally have total_assignments/num_members shifts
+            # We'll use a proxy: minimize the sum of squared differences
+            variance_proxy = 0
+            for total in member_totals:
+                # Use squared difference as proxy for variance (avoids division)
+                variance_proxy += total * total
+            
+            logging.debug(f"Workload balance proxy: {variance_proxy} (member totals: {member_totals})")
+            return variance_proxy
             
         except (IndexError, TypeError) as e:
             logging.debug(f"Error calculating workload variance: {e}")
