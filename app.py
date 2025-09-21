@@ -640,12 +640,12 @@ class ScheduleSolver:
         logging.info(f"Quinary objective: Minimize shift type variance")
         
         # Multi-objective function with weighted priorities
-        # Weights: assignments(1000) > priority(100) > unassigned(10) > workload_variance(5) > shift_type_variance(3)
+        # Weights: assignments(1000) > priority(100) > unassigned(10) > workload_variance(50) > shift_type_variance(3)
         objective = (
             total_assignments * 1000 +      # Primary: maximize assignments
             priority_bonus * 100 +          # Secondary: prefer priority assignments
             -unassigned_penalty * 10 +      # Tertiary: minimize unassigned shifts
-            -workload_variance * 5 +        # Quaternary: balance total workload
+            -workload_variance * 50 +       # Quaternary: balance total workload
             -shift_type_variance * 3        # Quinary: balance shift types
         )
         
@@ -684,22 +684,21 @@ class ScheduleSolver:
             if len(members) <= 1:
                 return 0
             
-            # Use a simpler approach: minimize the maximum difference between any two members
-            # This avoids complex linear expressions that OR-Tools can't handle
+            # Calculate total assignments per member (excluding dummy worker)
             member_totals = []
             for m in range(len(members) - 1):  # Exclude dummy worker
                 total = sum(x[m, s, d] for s in range(len(shifts)) for d in range(days_in_month))
                 member_totals.append(total)
             
-            if not member_totals:
+            if not member_totals or len(member_totals) <= 1:
                 return 0
             
-            # Return sum of all assignments (this encourages balanced distribution)
-            # The solver will naturally try to balance when minimizing this
-            total_assignments = sum(member_totals)
+            # Calculate actual variance to penalize unequal distribution
+            average = sum(member_totals) / len(member_totals)
+            variance = sum((total - average) ** 2 for total in member_totals)
             
-            logging.debug(f"Workload balance objective: {total_assignments} (member totals: {member_totals})")
-            return total_assignments
+            logging.debug(f"Workload variance: {variance:.2f} (member totals: {member_totals}, average: {average:.2f})")
+            return variance
             
         except (IndexError, TypeError) as e:
             logging.debug(f"Error calculating workload variance: {e}")
