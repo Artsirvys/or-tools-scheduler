@@ -697,33 +697,20 @@ class ScheduleSolver:
             if not member_totals or len(member_totals) <= 1:
                 return 0
             
-            # Enhanced approach: penalize differences greater than 1
-            variance_penalty = 0
+            # Use a different approach: penalize large differences between members
+            # This avoids division while still encouraging equal distribution
+            variance_proxy = 0
             
-            # Calculate penalty for differences greater than 1 between any two members
+            # Calculate sum of absolute differences between all pairs of members
+            # This penalizes when some members have many more shifts than others
             for i in range(len(member_totals)):
                 for j in range(i + 1, len(member_totals)):
+                    # Use squared difference to penalize large gaps more heavily
                     diff = member_totals[i] - member_totals[j]
-                    
-                    # Heavy penalty for differences greater than 1
-                    # Use OR-Tools compatible approach: create abs_diff variable
-                    abs_diff = self.model.NewIntVar(0, days_in_month * len(shifts), f'abs_diff_{i}_{j}')
-                    self.model.AddAbsEquality(abs_diff, diff)
-                    
-                    # Create excess variable for differences > 1
-                    excess = self.model.NewIntVar(0, days_in_month * len(shifts), f'excess_{i}_{j}')
-                    self.model.AddMaxEquality(excess, [abs_diff - 1, 0])
-                    
-                    # Add penalty: excess^2 * 100 for large differences, abs_diff * 2 for small differences
-                    penalty_term = self.model.NewIntVar(0, (days_in_month * len(shifts))**2 * 100, f'penalty_{i}_{j}')
-                    
-                    # If excess > 0, penalty = excess^2 * 100, otherwise penalty = abs_diff * 2
-                    # We'll use a simpler approach: penalty = excess * 100 + abs_diff * 2
-                    self.model.Add(penalty_term == excess * 100 + abs_diff * 2)
-                    variance_penalty += penalty_term
+                    variance_proxy += diff * diff
             
-            logging.debug(f"Workload balance penalty calculated using OR-Tools compatible method")
-            return variance_penalty
+            logging.debug(f"Workload balance proxy: {variance_proxy} (member totals: {member_totals})")
+            return variance_proxy
             
         except (IndexError, TypeError) as e:
             logging.debug(f"Error calculating workload variance: {e}")
