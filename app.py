@@ -697,18 +697,17 @@ class ScheduleSolver:
             if not member_totals or len(member_totals) <= 1:
                 return 0
             
-            # Use sum of squared differences instead of variance to avoid division
-            # This still penalizes unequal distribution without requiring division
-            total_assignments = sum(member_totals)
-            num_members = len(member_totals)
-            
-            # Calculate sum of squared differences from equal distribution
-            # Each member should ideally have total_assignments/num_members shifts
-            # We'll use a proxy: minimize the sum of squared differences
+            # Use a different approach: penalize large differences between members
+            # This avoids division while still encouraging equal distribution
             variance_proxy = 0
-            for total in member_totals:
-                # Use squared difference as proxy for variance (avoids division)
-                variance_proxy += total * total
+            
+            # Calculate sum of absolute differences between all pairs of members
+            # This penalizes when some members have many more shifts than others
+            for i in range(len(member_totals)):
+                for j in range(i + 1, len(member_totals)):
+                    # Use squared difference to penalize large gaps more heavily
+                    diff = member_totals[i] - member_totals[j]
+                    variance_proxy += diff * diff
             
             logging.debug(f"Workload balance proxy: {variance_proxy} (member totals: {member_totals})")
             return variance_proxy
