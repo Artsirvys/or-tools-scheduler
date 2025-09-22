@@ -697,20 +697,26 @@ class ScheduleSolver:
             if not member_totals or len(member_totals) <= 1:
                 return 0
             
-            # Use a different approach: penalize large differences between members
-            # This avoids division while still encouraging equal distribution
-            variance_proxy = 0
+            # Enhanced approach: penalize differences greater than 1
+            variance_penalty = 0
             
-            # Calculate sum of absolute differences between all pairs of members
-            # This penalizes when some members have many more shifts than others
+            # Calculate penalty for differences greater than 1 between any two members
             for i in range(len(member_totals)):
                 for j in range(i + 1, len(member_totals)):
-                    # Use squared difference to penalize large gaps more heavily
                     diff = member_totals[i] - member_totals[j]
-                    variance_proxy += diff * diff
+                    
+                    # Heavy penalty for differences greater than 1
+                    if abs(diff) > 1:
+                        # Square the excess difference to heavily penalize large gaps
+                        excess = abs(diff) - 1
+                        variance_penalty += excess * excess * 100  # Heavy penalty
+                        logging.debug(f"Large difference penalty: {excess}^2 * 100 = {excess * excess * 100}")
+                    else:
+                        # Small penalty for differences of 0 or 1 (acceptable)
+                        variance_penalty += abs(diff) * 2
             
-            logging.debug(f"Workload balance proxy: {variance_proxy} (member totals: {member_totals})")
-            return variance_proxy
+            logging.debug(f"Workload balance penalty: {variance_penalty} (member totals: {member_totals})")
+            return variance_penalty
             
         except (IndexError, TypeError) as e:
             logging.debug(f"Error calculating workload variance: {e}")
