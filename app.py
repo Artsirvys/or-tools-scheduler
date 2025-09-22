@@ -323,8 +323,6 @@ class ScheduleSolver:
                     # This constraint type is handled by the multi-objective optimization
                     # No additional constraints needed - just log for clarity
                     logging.info(f"Workload distribution constraint handled by multi-objective optimization")
-                elif constraint_type == 'member_shift_restriction':
-                    constraints_added += self._add_member_shift_restriction_constraint(x, members, shifts, days_in_month, parameters)
                 else:
                     logging.warning(f"Unknown custom constraint type: {constraint_type}")
                     
@@ -529,71 +527,6 @@ class ScheduleSolver:
                     constraints_added += 1
         
         logging.info(f"Added {constraints_added} shift transition constraints")
-        return constraints_added
-    
-    def _add_member_shift_restriction_constraint(self, x, members, shifts, days_in_month, parameters):
-        """Add constraint to limit specific member's assignments to specific shifts"""
-        constraints_added = 0
-        
-        member_id = parameters.get('member_id', '')
-        member_name = parameters.get('member_name', '')
-        restriction_type = parameters.get('restriction_type', 'exclusive')
-        allowed_shift_ids = parameters.get('allowed_shift_ids', [])
-        allowed_shift_names = parameters.get('allowed_shift_names', [])
-        max_shifts = parameters.get('max_shifts', None)  # For monthly limits
-        
-        # Find the member index
-        member_index = None
-        for i, member in enumerate(members):
-            if member.get('id') == member_id:
-                member_index = i
-                break
-        
-        if member_index is None:
-            logging.warning(f"Member not found: {member_name} (ID: {member_id})")
-            return constraints_added
-        
-        # Find target shift indices
-        target_shift_indices = []
-        for i, shift in enumerate(shifts):
-            shift_id = shift.get('id', '')
-            shift_name = shift.get('name', '')
-            
-            # Check if this shift is in the allowed list
-            if shift_id in allowed_shift_ids or shift_name in allowed_shift_names:
-                target_shift_indices.append(i)
-        
-        if not target_shift_indices:
-            logging.warning(f"No target shifts found for member {member_name}")
-            return constraints_added
-        
-        logging.info(f"Adding member shift restriction for {member_name}: {restriction_type} restriction on {len(target_shift_indices)} shifts")
-        
-        if restriction_type == 'exclusive':
-            # Member can ONLY work the specified shifts
-            for s in range(len(shifts)):
-                if s not in target_shift_indices:
-                    # Member cannot work this shift on any day
-                    for d in range(days_in_month):
-                        self.model.Add(x[member_index, s, d] == 0)
-                        constraints_added += 1
-            
-            # If max_shifts is specified, limit total assignments to those shifts
-            if max_shifts is not None:
-                total_assignments = sum(x[member_index, s, d] for s in target_shift_indices for d in range(days_in_month))
-                self.model.Add(total_assignments <= max_shifts)
-                constraints_added += 1
-                logging.info(f"Added monthly limit: {member_name} can work at most {max_shifts} of the allowed shifts per month")
-        
-        elif restriction_type == 'preferred':
-            # This would be a soft constraint handled by objective function
-            # For now, just log that we're processing it
-            logging.info(f"Preferred shift restriction for {member_name} would be handled as soft constraint")
-        
-        else:
-            logging.warning(f"Unknown restriction type: {restriction_type}")
-        
-        logging.info(f"Added {constraints_added} member shift restriction constraints for {member_name}")
         return constraints_added
     
     def _add_ai_workers_per_shift_constraint(self, x, members, shifts, days_in_month, parameters):
