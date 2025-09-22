@@ -706,16 +706,23 @@ class ScheduleSolver:
                     diff = member_totals[i] - member_totals[j]
                     
                     # Heavy penalty for differences greater than 1
-                    if abs(diff) > 1:
-                        # Square the excess difference to heavily penalize large gaps
-                        excess = abs(diff) - 1
-                        variance_penalty += excess * excess * 100  # Heavy penalty
-                        logging.debug(f"Large difference penalty: {excess}^2 * 100 = {excess * excess * 100}")
-                    else:
-                        # Small penalty for differences of 0 or 1 (acceptable)
-                        variance_penalty += abs(diff) * 2
+                    # Use OR-Tools compatible approach: create abs_diff variable
+                    abs_diff = self.model.NewIntVar(0, days_in_month * len(shifts), f'abs_diff_{i}_{j}')
+                    self.model.AddAbsEquality(abs_diff, diff)
+                    
+                    # Create excess variable for differences > 1
+                    excess = self.model.NewIntVar(0, days_in_month * len(shifts), f'excess_{i}_{j}')
+                    self.model.AddMaxEquality(excess, [abs_diff - 1, 0])
+                    
+                    # Add penalty: excess^2 * 100 for large differences, abs_diff * 2 for small differences
+                    penalty_term = self.model.NewIntVar(0, (days_in_month * len(shifts))**2 * 100, f'penalty_{i}_{j}')
+                    
+                    # If excess > 0, penalty = excess^2 * 100, otherwise penalty = abs_diff * 2
+                    # We'll use a simpler approach: penalty = excess * 100 + abs_diff * 2
+                    self.model.Add(penalty_term == excess * 100 + abs_diff * 2)
+                    variance_penalty += penalty_term
             
-            logging.debug(f"Workload balance penalty: {variance_penalty} (member totals: {member_totals})")
+            logging.debug(f"Workload balance penalty calculated using OR-Tools compatible method")
             return variance_penalty
             
         except (IndexError, TypeError) as e:
