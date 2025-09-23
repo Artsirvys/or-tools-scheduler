@@ -532,7 +532,7 @@ class ScheduleSolver:
         return constraints_added
     
     def _add_member_monthly_shift_limit_constraint(self, x, members, shifts, days_in_month, parameters):
-        """Add constraint to limit specific member's monthly assignments to specific shift type or all shift types"""
+        """Add constraint to limit specific member's monthly assignments to specific shift type"""
         constraints_added = 0
         
         member_id = parameters.get('member_id', '')
@@ -551,50 +551,23 @@ class ScheduleSolver:
             logging.warning(f"Member not found: {member_name} (ID: {member_id})")
             return constraints_added
         
-        # Check if this is for all shift types (when applies_to_shifts is provided)
-        if 'applies_to_shifts' in parameters and 'applies_to_shift_names' in parameters:
-            # Apply limit to all specified shift types
-            applies_to_shifts = parameters.get('applies_to_shifts', [])
-            applies_to_shift_names = parameters.get('applies_to_shift_names', [])
-            
-            logging.info(f"Adding monthly shift limit for {member_name}: max {max_shifts} total shifts per month (all specified shift types)")
-            
-            # Find all target shift indices
-            target_shift_indices = []
-            for i, shift in enumerate(shifts):
-                shift_id = shift.get('id', '')
-                shift_name_actual = shift.get('name', '')
-                
-                if shift_id in applies_to_shifts or shift_name_actual in applies_to_shift_names:
-                    target_shift_indices.append(i)
-            
-            if not target_shift_indices:
-                logging.warning(f"No target shifts found for member {member_name}")
-                return constraints_added
-            
-            # Add constraint: sum of member's assignments to ALL specified shifts <= max_shifts
-            total_assignments = sum(x[member_index, s, d] for s in target_shift_indices for d in range(days_in_month))
-            self.model.Add(total_assignments <= max_shifts)
-            constraints_added += 1
-            
-        else:
-            # Find the specific shift by exact name match
-            target_shift_index = None
-            for i, shift in enumerate(shifts):
-                if shift.get('name') == shift_name:
-                    target_shift_index = i
-                    break
-            
-            if target_shift_index is None:
-                logging.warning(f"Shift not found: {shift_name}")
-                return constraints_added
-            
-            logging.info(f"Adding monthly shift limit for {member_name}: max {max_shifts} {shift_name} shifts per month")
-            
-            # Add constraint: sum of member's assignments to this specific shift <= max_shifts
-            total_assignments = sum(x[member_index, target_shift_index, d] for d in range(days_in_month))
-            self.model.Add(total_assignments <= max_shifts)
-            constraints_added += 1
+        # Find the specific shift by exact name match
+        target_shift_index = None
+        for i, shift in enumerate(shifts):
+            if shift.get('name') == shift_name:
+                target_shift_index = i
+                break
+        
+        if target_shift_index is None:
+            logging.warning(f"Shift not found: {shift_name}")
+            return constraints_added
+        
+        logging.info(f"Adding monthly shift limit for {member_name}: max {max_shifts} {shift_name} shifts per month")
+        
+        # Add constraint: sum of member's assignments to this specific shift <= max_shifts
+        total_assignments = sum(x[member_index, target_shift_index, d] for d in range(days_in_month))
+        self.model.Add(total_assignments <= max_shifts)
+        constraints_added += 1
         
         logging.info(f"Added {constraints_added} member monthly shift limit constraints for {member_name}")
         return constraints_added
