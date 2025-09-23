@@ -323,6 +323,8 @@ class ScheduleSolver:
                     # This constraint type is handled by the multi-objective optimization
                     # No additional constraints needed - just log for clarity
                     logging.info(f"Workload distribution constraint handled by multi-objective optimization")
+                elif constraint_type == 'member_monthly_shift_limit':
+                    constraints_added += self._add_member_monthly_shift_limit_constraint(x, members, shifts, days_in_month, parameters)
                 else:
                     logging.warning(f"Unknown custom constraint type: {constraint_type}")
                     
@@ -527,6 +529,47 @@ class ScheduleSolver:
                     constraints_added += 1
         
         logging.info(f"Added {constraints_added} shift transition constraints")
+        return constraints_added
+    
+    def _add_member_monthly_shift_limit_constraint(self, x, members, shifts, days_in_month, parameters):
+        """Add constraint to limit specific member's monthly assignments to specific shift type"""
+        constraints_added = 0
+        
+        member_id = parameters.get('member_id', '')
+        member_name = parameters.get('member_name', '')
+        shift_name = parameters.get('shift_name', '')
+        max_shifts = parameters.get('max_shifts', 1)
+        
+        # Find the member index
+        member_index = None
+        for i, member in enumerate(members):
+            if member.get('id') == member_id:
+                member_index = i
+                break
+        
+        if member_index is None:
+            logging.warning(f"Member not found: {member_name} (ID: {member_id})")
+            return constraints_added
+        
+        # Find the specific shift by exact name match
+        target_shift_index = None
+        for i, shift in enumerate(shifts):
+            if shift.get('name') == shift_name:
+                target_shift_index = i
+                break
+        
+        if target_shift_index is None:
+            logging.warning(f"Shift not found: {shift_name}")
+            return constraints_added
+        
+        logging.info(f"Adding monthly shift limit for {member_name}: max {max_shifts} {shift_name} shifts per month")
+        
+        # Add constraint: sum of member's assignments to this specific shift <= max_shifts
+        total_assignments = sum(x[member_index, target_shift_index, d] for d in range(days_in_month))
+        self.model.Add(total_assignments <= max_shifts)
+        constraints_added += 1
+        
+        logging.info(f"Added {constraints_added} member monthly shift limit constraints for {member_name}")
         return constraints_added
     
     def _add_ai_workers_per_shift_constraint(self, x, members, shifts, days_in_month, parameters):
