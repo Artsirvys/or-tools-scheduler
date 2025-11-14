@@ -1,6 +1,7 @@
 from flask import Flask, request, jsonify
 from ortools.sat.python import cp_model
 from datetime import datetime, timedelta
+from calendar import monthrange
 import json
 import logging
 
@@ -34,7 +35,9 @@ class ScheduleSolver:
             }
             
             # Get month details
-            days_in_month = (datetime(year, month + 1, 1) - datetime(year, month, 1)).days
+            # Handle December (month=12) edge case: month+1 would be 13 which is invalid
+            # Use calendar.monthrange() which handles all edge cases including leap years
+            days_in_month = monthrange(year, month)[1]
             
             # DEBUG: Log all input data
             logging.info(f"=== SOLVER INPUT DATA ===")
