@@ -85,6 +85,12 @@ class ScheduleSolver:
             logging.info("Adding max shifts per month constraint...")
             self._add_max_shifts_per_month_constraint(x, members, shifts, days_in_month, constraints)
             
+            # 3.5. FAIR DISTRIBUTION (Hard constraint)
+            # This constraint ensures equal distribution of shifts among team members
+            # Maximum difference between any two members' shift counts should be at most 1
+            logging.info("Adding fair distribution constraint...")
+            self._add_fair_distribution_hard_constraint(x, members, shifts, days_in_month, constraints)
+            
             # 4. MAX CONSECUTIVE SHIFTS (Hard constraint)
             # This constraint limits how many shifts in a row a worker can be assigned
             logging.info("Adding max consecutive shifts constraint...")
@@ -237,6 +243,42 @@ class ScheduleSolver:
             constraints_added += 1
         
         logging.info(f"Added {constraints_added} max shifts per month constraints")
+    
+    def _add_fair_distribution_hard_constraint(self, x, members, shifts, days_in_month, constraints):
+        """Ensure fair distribution of shifts among team members
+        
+        This constraint ensures that the maximum difference between any two members' 
+        shift counts is at most 1. This means if one member gets N shifts, all other 
+        members should get either N or N-1 shifts (if mathematically possible).
+        """
+        # Exclude dummy worker from fair distribution
+        real_members_count = len(members) - 1
+        
+        if real_members_count <= 1:
+            logging.info("Fair distribution constraint skipped: only one or zero real members")
+            return
+        
+        logging.info(f"Adding fair distribution constraint for {real_members_count} real members")
+        
+        constraints_added = 0
+        
+        # Calculate total shifts for each real member
+        member_totals = []
+        for m in range(real_members_count):
+            total = sum(x[m, s, d] for s in range(len(shifts)) for d in range(days_in_month))
+            member_totals.append(total)
+        
+        # Add constraint: for any pair of members, the difference should be at most 1
+        # This ensures max difference <= 1 across all members
+        for i in range(real_members_count):
+            for j in range(i + 1, real_members_count):
+                # member_totals[i] - member_totals[j] <= 1
+                self.model.Add(member_totals[i] - member_totals[j] <= 1)
+                # member_totals[j] - member_totals[i] <= 1
+                self.model.Add(member_totals[j] - member_totals[i] <= 1)
+                constraints_added += 2
+        
+        logging.info(f"Added {constraints_added} fair distribution constraints (ensuring max difference <= 1 between any two members)")
     
     def _add_max_consecutive_shifts_constraint(self, x, members, shifts, days_in_month, constraints):
         """Limit maximum consecutive shifts in a row per worker"""
