@@ -230,17 +230,94 @@ class ScheduleSolver:
         
         logging.info(f"Added {constraints_added} workers per shift constraints")
     
+    def _get_member_total_shift_limits(self, members, constraints):
+        """Get effective total shift limit for each member
+        
+        Returns a dict mapping member_id to their effective max shifts:
+        - If member has custom constraints limiting total shifts, use the sum of per-shift limits
+        - Otherwise, use default max_days_per_month
+        """
+        default_max = constraints.get('max_days_per_month', 31)
+        member_limits = {}
+        custom_constraints = constraints.get('custom_constraints', [])
+        
+        # For each member, check if they have shift-specific limits that effectively limit total shifts
+        # We'll sum up all their per-shift-type limits to get an effective total limit
+        for member in members:
+            member_id = member.get('id', '')
+            if member_id == 'unassigned':
+                continue
+                
+            # Check all custom constraints for this member
+            member_shift_limits = {}  # shift_name -> max_shifts
+            for constraint in custom_constraints:
+                if constraint.get('status') != 'translated':
+                    continue
+                    
+                constraint_type = constraint.get('constraint_type', '')
+                if 'ai_translation' in constraint:
+                    ai_translation = constraint.get('ai_translation', {})
+                    if not constraint_type:
+                        constraint_type = ai_translation.get('constraint_type', '')
+                    parameters = ai_translation.get('parameters', {})
+                else:
+                    parameters = constraint.get('parameters', {})
+                
+                # Check if this is a member_monthly_shift_limit for this member
+                if constraint_type == 'member_monthly_shift_limit':
+                    constraint_member_id = parameters.get('member_id', '')
+                    if constraint_member_id == member_id:
+                        shift_name = parameters.get('shift_name', '')
+                        max_shifts = parameters.get('max_shifts', 0)
+                        if shift_name:
+                            # Store the limit for this shift type
+                            # If multiple constraints for same shift, take the minimum
+                            if shift_name not in member_shift_limits:
+                                member_shift_limits[shift_name] = max_shifts
+                            else:
+                                member_shift_limits[shift_name] = min(member_shift_limits[shift_name], max_shifts)
+            
+            # If member has per-shift-type limits, sum them to get effective total limit
+            if member_shift_limits:
+                # Sum all the per-shift limits - this gives us the effective total limit
+                # (assuming member can't exceed the sum of all their per-shift limits)
+                effective_limit = sum(member_shift_limits.values())
+                member_limits[member_id] = effective_limit
+                logging.info(f"Member {member.get('name', member_id)} has effective total limit: {effective_limit} (from {len(member_shift_limits)} shift-specific limits)")
+            else:
+                # No custom limits, use default
+                member_limits[member_id] = default_max
+        
+        return member_limits
+    
     def _add_max_shifts_per_month_constraint(self, x, members, shifts, days_in_month, constraints):
-        """Limit maximum shift assignments per month per worker"""
-        max_shifts = constraints.get('max_days_per_month', 31)  # Keep the same constraint key for backward compatibility
-        logging.info(f"Adding max shifts per month constraint: {max_shifts} shifts per worker")
+        """Limit maximum shift assignments per month per worker
+        
+        Applies individual limits per member:
+        - If member has custom constraints limiting shifts (per shift type), 
+          calculate effective total limit by summing per-shift-type limits
+        - Otherwise, use the default max_days_per_month from basic_constraints
+        """
+        default_max_shifts = constraints.get('max_days_per_month', 31)  # Keep the same constraint key for backward compatibility
+        logging.info(f"Adding max shifts per month constraint: default {default_max_shifts} shifts per worker")
+        
+        # Get member-specific limits (reusing the helper method)
+        member_limits = self._get_member_total_shift_limits(members, constraints)
         
         constraints_added = 0
         for m in range(len(members)):
-            # Sum of all shift assignments for this member should be <= max_shifts
+            member_id = members[m].get('id', '')
+            
+            # Get this member's effective limit
+            member_max_shifts = member_limits.get(member_id, default_max_shifts)
+            
+            # Sum of all shift assignments for this member should be <= member_max_shifts
             total_assignments = sum(x[m, s, d] for s in range(len(shifts)) for d in range(days_in_month))
-            self.model.Add(total_assignments <= max_shifts)
+            self.model.Add(total_assignments <= member_max_shifts)
             constraints_added += 1
+            
+            if member_max_shifts != default_max_shifts:
+                logging.info(f"Member {members[m].get('name', member_id)} has custom limit: {member_max_shifts} shifts (default would be {default_max_shifts})")
         
         logging.info(f"Added {constraints_added} max shifts per month constraints")
     
@@ -248,8 +325,9 @@ class ScheduleSolver:
         """Ensure fair distribution of shifts among team members
         
         This constraint ensures that the maximum difference between any two members' 
-        shift counts is at most 1. This means if one member gets N shifts, all other 
-        members should get either N or N-1 shifts (if mathematically possible).
+        shift counts is at most 1. Members with custom constraints limiting their 
+        total shifts are excluded from the fairness calculation - they get their 
+        specified limit, while other members are distributed fairly up to max_days_per_month.
         """
         # Exclude dummy worker from fair distribution
         real_members_count = len(members) - 1
@@ -258,27 +336,54 @@ class ScheduleSolver:
             logging.info("Fair distribution constraint skipped: only one or zero real members")
             return
         
-        logging.info(f"Adding fair distribution constraint for {real_members_count} real members")
+        # Get effective limits for each member
+        member_limits = self._get_member_total_shift_limits(members, constraints)
+        default_max = constraints.get('max_days_per_month', 31)
+        
+        # Identify members with custom limits (limits different from default)
+        members_with_custom_limits = set()
+        members_without_custom_limits = []
+        
+        for m in range(real_members_count):
+            member_id = members[m].get('id', '')
+            member_limit = member_limits.get(member_id, default_max)
+            
+            if member_limit < default_max:
+                # This member has a custom limit lower than default
+                members_with_custom_limits.add(m)
+                logging.info(f"Member {members[m].get('name', member_id)} excluded from fair distribution (custom limit: {member_limit})")
+            else:
+                members_without_custom_limits.append(m)
+        
+        # Only apply fair distribution among members without custom limits
+        if len(members_without_custom_limits) <= 1:
+            logging.info(f"Fair distribution constraint skipped: {len(members_without_custom_limits)} members without custom limits")
+            return
+        
+        logging.info(f"Adding fair distribution constraint for {len(members_without_custom_limits)} members (excluding {len(members_with_custom_limits)} with custom limits)")
         
         constraints_added = 0
         
-        # Calculate total shifts for each real member
+        # Calculate total shifts for each member without custom limits
         member_totals = []
-        for m in range(real_members_count):
+        for m in members_without_custom_limits:
             total = sum(x[m, s, d] for s in range(len(shifts)) for d in range(days_in_month))
-            member_totals.append(total)
+            member_totals.append((m, total))
         
-        # Add constraint: for any pair of members, the difference should be at most 1
-        # This ensures max difference <= 1 across all members
-        for i in range(real_members_count):
-            for j in range(i + 1, real_members_count):
-                # member_totals[i] - member_totals[j] <= 1
-                self.model.Add(member_totals[i] - member_totals[j] <= 1)
-                # member_totals[j] - member_totals[i] <= 1
-                self.model.Add(member_totals[j] - member_totals[i] <= 1)
+        # Add constraint: for any pair of members without custom limits, the difference should be at most 1
+        # This ensures max difference <= 1 across members who can actually have similar shift counts
+        for i in range(len(member_totals)):
+            for j in range(i + 1, len(member_totals)):
+                m_i, total_i = member_totals[i]
+                m_j, total_j = member_totals[j]
+                
+                # total_i - total_j <= 1
+                self.model.Add(total_i - total_j <= 1)
+                # total_j - total_i <= 1
+                self.model.Add(total_j - total_i <= 1)
                 constraints_added += 2
         
-        logging.info(f"Added {constraints_added} fair distribution constraints (ensuring max difference <= 1 between any two members)")
+        logging.info(f"Added {constraints_added} fair distribution constraints (ensuring max difference <= 1 between members without custom limits)")
     
     def _add_max_consecutive_shifts_constraint(self, x, members, shifts, days_in_month, constraints):
         """Limit maximum consecutive shifts in a row per worker"""
