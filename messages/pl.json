@@ -1,0 +1,129 @@
+{
+  "common": {
+    "appName": "AISchedulator",
+    "signIn": "Zaloguj się",
+    "signUp": "Zacznij za darmo (Wczesny dostęp)",
+    "about": "O nas",
+    "pricing": "Cennik"
+  },
+  "landing": {
+    "title": "Automatyczne planowanie zmian medycznych",
+    "subtitle": "Przestań marnować godziny na harmonogramy zmian",
+    "description": "Nasz system tworzy sprawiedliwe zmiany medyczne w sekundach — stworzony przez lekarza, aby wyeliminować godziny ręcznego planowania.",
+    "features": {
+      "title": "Wszystko, czego potrzebujesz do efektywnego planowania",
+      "teamManagement": {
+        "title": "Zarządzanie zespołem",
+        "description": "Twórz zespoły, dodawaj uczestników i śledź poziomy doświadczenia dla sprawiedliwego planowania."
+      },
+      "customShifts": {
+        "title": "Niestandardowe zmiany",
+        "description": "Zdefiniuj niestandardowe godziny zmian i pozwól członkom zespołu oznaczać dostępność."
+      },
+      "aiScheduling": {
+        "title": "Planowanie napędzane AI",
+        "description": "Generuj optymalne harmonogramy miesięczne na podstawie dostępności, doświadczenia i preferencji."
+      },
+      "export": {
+        "title": "Opcje eksportu",
+        "description": "Podstawowe opcje eksportu dla łatwego udostępniania i drukowania."
+      },
+      "notifications": {
+        "title": "Powiadomienia o zmianach",
+        "description": "Automatyczne powiadomienia e-mail o zmianach zmian i aktualizacjach harmonogramu."
+      }
+    },
+    "hostWorkflow": {
+      "title": "Jak to działa dla gospodarzy",
+      "subtitle": "Prosty proces, aby efektywnie zaplanować swoje zespoły",
+      "step1": {
+        "title": "Zacznij",
+        "description": "Kliknij przycisk \"Utwórz zespół\" na swoim panelu, aby rozpocząć konfigurację swojego zespołu medycznego."
+      },
+      "step2": {
+        "title": "Skonfiguruj szczegóły zespołu",
+        "description": "Skonfiguruj podstawowe informacje, w tym nazwę zespołu, dział i wymaganą liczbę pracowników na zmianę."
+      },
+      "step3": {
+        "title": "Zdefiniuj zmiany",
+        "description": "Skonfiguruj typy zmian z przedziałami czasowymi i wymaganiami dotyczącymi pracowników dla swojego zespołu."
+      },
+      "step4": {
+        "title": "Zarządzaj swoimi zespołami",
+        "description": "Po utworzeniu uzyskaj dostęp do opcji zarządzania zespołem, ustaw terminy, przeglądaj harmonogramy i sprawdzaj dostępność zespołu wszystko w jednym miejscu."
+      },
+      "step5": {
+        "title": "Zaproś członków zespołu",
+        "description": "Wyślij zaproszenia e-mail do członków zespołu, aby dołączyli do Twojego zespołu i zaczęli oznaczać swoją dostępność."
+      },
+      "step6": {
+        "title": "Ustaw ograniczenia planowania",
+        "description": "Skonfiguruj ograniczenia planowania napędzane AI, w tym maksymalne kolejne dni, maksymalną liczbę dni w miesiącu i niestandardowe reguły do kierowania algorytmem planowania."
+      }
+    },
+    "participantWorkflow": {
+      "title": "Jak to działa dla uczestników",
+      "subtitle": "Prosty proces dołączenia do zespołu i zarządzania swoimi zmianami",
+      "step1": {
+        "title": "Otrzymaj zaproszenie",
+        "description": "Gospodarz Twojego zespołu wyśle Ci zaproszenie e-mail, aby dołączyć do zespołu. Kliknij link rejestracyjny w e-mailu, aby zaakceptować zaproszenie i rozpocząć proces rejestracji."
+      },
+      "step2": {
+        "title": "Uzupełnij rejestrację",
+        "description": "Wypełnij prosty formularz rejestracyjny swoim imieniem i nazwiskiem oraz utwórz bezpieczne hasło. Twój e-mail jest wstępnie wypełniony z zaproszenia, co sprawia, że proces jest szybki i łatwy."
+      },
+      "step3": {
+        "title": "Uzyskaj dostęp do swojego panelu",
+        "description": "Po rejestracji zobaczysz swój intuicyjny panel z szybkim dostępem do ustawiania dostępności, żądań zmian zmian i przeglądania harmonogramu. Wszystko, czego potrzebujesz, jest tylko jednym kliknięciem."
+      },
+      "step4": {
+        "title": "Oznacz swoją dostępność",
+        "description": "Wybierz swój zespół i miesiąc, a następnie kliknij dowolną kombinację daty i zmiany, aby przejść przez statusy dostępności: Dostępny, Priorytet, Niedostępny, Wakacje lub Konferencja. System ułatwia ustawienie swoich preferencji na cały miesiąc."
+      },
+      "step5": {
+        "title": "Zapisz swoje preferencje",
+        "description": "Po oznaczeniu wszystkich swoich preferencji dostępności kliknij \"Zapisz dostępność\", aby je przesłać. Możesz również zapisać jako szkic, jeśli musisz wrócić i dokończyć później."
+      },
+      "step6": {
+        "title": "Zażądaj zmian zmian",
+        "description": "Jeśli musisz zamienić lub zmienić przypisaną zmianę, użyj funkcji żądania zmiany zmiany. Wybierz swoją aktualną zmianę, wybierz preferowaną datę i typ zmiany, a system pomoże znaleźć członka zespołu do zamiany. Śledź wszystkie swoje żądania w jednym miejscu."
+      }
+    },
+    "additionalInfo": {
+      "line1": "Zaprojektowane dla szpitali, klinik i zespołów rezydentów medycznych.",
+      "line2": "Włączono bezpieczne uwierzytelnianie i kontrolę dostępu opartą na rolach."
+    },
+    "comingNext": {
+      "title": "Co nadchodzi",
+      "subtitle": "Dopiero zaczynamy — oto, co budujemy dalej:",
+      "mobileApps": {
+        "title": "Aplikacje mobilne (iOS i Android)",
+        "description": "Uzyskaj dostęp do harmonogramu w drodze"
+      },
+      "vacation": {
+        "title": "Zarządzanie wakacjami i formularze żądań zmian",
+        "description": "Uproszczone wnioski o urlop"
+      },
+      "autoSwap": {
+        "title": "Automatyczne zatwierdzenia zamian",
+        "description": "Inteligentna zamiana zmian z łatwością"
+      },
+      "export": {
+        "title": "Lepsze opcje eksportu (Excel, PDF itp.)",
+        "description": "Rozszerzone możliwości eksportu"
+      },
+      "analytics": {
+        "title": "Analityka zespołu i śledzenie obciążenia pracą",
+        "description": "Wglądy oparte na danych dla lepszego planowania"
+      },
+      "feedback": {
+        "title": "Masz prośbę?",
+        "description": "Powiedz nam bezpośrednio ze swojego panelu — budujemy na podstawie Twoich potrzeb."
+      }
+    },
+    "footer": {
+      "copyright": "Wszelkie prawa zastrzeżone."
+    }
+  }
+}
+

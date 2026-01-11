@@ -1,0 +1,129 @@
+{
+  "common": {
+    "appName": "AISchedulator",
+    "signIn": "Sign In",
+    "signUp": "Start Free (Early Access)",
+    "about": "About",
+    "pricing": "Pricing"
+  },
+  "landing": {
+    "title": "Automated Medical Shift Scheduling",
+    "subtitle": "Stop Wasting Hours on Shift Schedules",
+    "description": "Our system creates fair medical shifts in seconds — built by a MD to eliminate hours of manual scheduling.",
+    "features": {
+      "title": "Everything You Need for Efficient Scheduling",
+      "teamManagement": {
+        "title": "Team Management",
+        "description": "Create teams, add participants, and track experience levels for fair scheduling."
+      },
+      "customShifts": {
+        "title": "Custom Shifts",
+        "description": "Define custom shift hours and let team members mark availability."
+      },
+      "aiScheduling": {
+        "title": "AI-Powered Scheduling",
+        "description": "Generate optimal monthly schedules based on availability, experience, and preferences."
+      },
+      "export": {
+        "title": "Export Options",
+        "description": "Basic export options for easy sharing and printing."
+      },
+      "notifications": {
+        "title": "Change Notifications",
+        "description": "Automatic email notifications for shift changes and schedule updates."
+      }
+    },
+    "hostWorkflow": {
+      "title": "How It Works for Hosts",
+      "subtitle": "A simple workflow to get your teams scheduled efficiently",
+      "step1": {
+        "title": "Get Started",
+        "description": "Click the \"Create Team\" button on your dashboard to begin setting up your medical team."
+      },
+      "step2": {
+        "title": "Configure Team Details",
+        "description": "Set up basic information including team name, department, and workers required per shift."
+      },
+      "step3": {
+        "title": "Define Shifts",
+        "description": "Configure shift types with time slots and worker requirements for your team."
+      },
+      "step4": {
+        "title": "Manage Your Teams",
+        "description": "Once created, access team management options, set deadlines, view schedules, and check team availability all from one place."
+      },
+      "step5": {
+        "title": "Invite Team Members",
+        "description": "Send email invitations to team members to join your team and start marking their availability."
+      },
+      "step6": {
+        "title": "Set Scheduling Constraints",
+        "description": "Configure AI-powered scheduling constraints including max consecutive days, max days per month, and custom rules to guide the scheduling algorithm."
+      }
+    },
+    "participantWorkflow": {
+      "title": "How It Works for Participants",
+      "subtitle": "A straightforward process to join your team and manage your shifts",
+      "step1": {
+        "title": "Receive Invitation",
+        "description": "Your team host will send you an email invitation to join their team. Click the registration link in the email to accept the invitation and begin the sign-up process."
+      },
+      "step2": {
+        "title": "Complete Registration",
+        "description": "Fill out the simple registration form with your name and create a secure password. Your email is pre-filled from the invitation, making the process quick and easy."
+      },
+      "step3": {
+        "title": "Access Your Dashboard",
+        "description": "Once registered, you'll see your intuitive dashboard with quick access to set availability, request shift changes, and view your schedule. Everything you need is just one click away."
+      },
+      "step4": {
+        "title": "Mark Your Availability",
+        "description": "Select your team and month, then click on any date and shift combination to cycle through availability statuses: Available, Priority, Unavailable, Vacation, or Conference. The system makes it easy to set your preferences for the entire month."
+      },
+      "step5": {
+        "title": "Save Your Preferences",
+        "description": "Once you've marked all your availability preferences, click \"Save Availability\" to submit them. You can also save as a draft if you need to come back and finish later."
+      },
+      "step6": {
+        "title": "Request Shift Changes",
+        "description": "If you need to swap or change an assigned shift, use the shift change request feature. Select your current shift, choose a preferred date and shift type, and the system will help find a team member to swap with. Track all your requests in one place."
+      }
+    },
+    "additionalInfo": {
+      "line1": "Designed for hospitals, clinics, and medical residency teams.",
+      "line2": "Secure authentication and role-based access control included."
+    },
+    "comingNext": {
+      "title": "What's Coming Next",
+      "subtitle": "We're just getting started — here's what we're building next:",
+      "mobileApps": {
+        "title": "Mobile apps (iOS & Android)",
+        "description": "Access your schedule on the go"
+      },
+      "vacation": {
+        "title": "Vacation management & shift request forms",
+        "description": "Streamlined time-off requests"
+      },
+      "autoSwap": {
+        "title": "Automatic swap approvals",
+        "description": "Smart shift swapping made easy"
+      },
+      "export": {
+        "title": "Better export options (Excel, PDF, etc.)",
+        "description": "Enhanced export capabilities"
+      },
+      "analytics": {
+        "title": "Team analytics and workload tracking",
+        "description": "Data-driven insights for better scheduling"
+      },
+      "feedback": {
+        "title": "Have a request?",
+        "description": "Tell us directly from your dashboard — we build based on your needs."
+      }
+    },
+    "footer": {
+      "copyright": "All rights reserved."
+    }
+  }
+}
+

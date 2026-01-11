@@ -1,0 +1,129 @@
+{
+  "common": {
+    "appName": "AISchedulator",
+    "signIn": "Anmelden",
+    "signUp": "Kostenlos starten (Früher Zugang)",
+    "about": "Über uns",
+    "pricing": "Preise"
+  },
+  "landing": {
+    "title": "Automatische medizinische Schichtplanung",
+    "subtitle": "Hör auf, Stunden mit Schichtplänen zu verschwenden",
+    "description": "Unser System erstellt faire medizinische Schichten in Sekunden — entwickelt von einem Arzt, um stundenlange manuelle Planung zu eliminieren.",
+    "features": {
+      "title": "Alles, was Sie für eine effiziente Planung benötigen",
+      "teamManagement": {
+        "title": "Teamverwaltung",
+        "description": "Erstellen Sie Teams, fügen Sie Teilnehmer hinzu und verfolgen Sie Erfahrungsstufen für eine faire Planung."
+      },
+      "customShifts": {
+        "title": "Benutzerdefinierte Schichten",
+        "description": "Definieren Sie benutzerdefinierte Schichtzeiten und lassen Sie Teammitglieder die Verfügbarkeit markieren."
+      },
+      "aiScheduling": {
+        "title": "KI-gestützte Planung",
+        "description": "Generieren Sie optimale monatliche Pläne basierend auf Verfügbarkeit, Erfahrung und Präferenzen."
+      },
+      "export": {
+        "title": "Exportoptionen",
+        "description": "Basis-Exportoptionen für einfaches Teilen und Drucken."
+      },
+      "notifications": {
+        "title": "Änderungsbenachrichtigungen",
+        "description": "Automatische E-Mail-Benachrichtigungen für Schichtänderungen und Planaktualisierungen."
+      }
+    },
+    "hostWorkflow": {
+      "title": "Wie es für Hosts funktioniert",
+      "subtitle": "Ein einfacher Arbeitsablauf, um Ihre Teams effizient zu planen",
+      "step1": {
+        "title": "Beginnen",
+        "description": "Klicken Sie auf die Schaltfläche \"Team erstellen\" in Ihrem Dashboard, um mit der Einrichtung Ihres medizinischen Teams zu beginnen."
+      },
+      "step2": {
+        "title": "Teamdetails konfigurieren",
+        "description": "Richten Sie grundlegende Informationen ein, einschließlich Teamname, Abteilung und erforderlicher Mitarbeiter pro Schicht."
+      },
+      "step3": {
+        "title": "Schichten definieren",
+        "description": "Konfigurieren Sie Schichttypen mit Zeitfenstern und Mitarbeiteranforderungen für Ihr Team."
+      },
+      "step4": {
+        "title": "Verwalten Sie Ihre Teams",
+        "description": "Nach der Erstellung greifen Sie auf Teamverwaltungsoptionen zu, setzen Sie Fristen, sehen Sie Pläne ein und überprüfen Sie die Teamverfügbarkeit alles an einem Ort."
+      },
+      "step5": {
+        "title": "Teammitglieder einladen",
+        "description": "Senden Sie E-Mail-Einladungen an Teammitglieder, um Ihrem Team beizutreten und ihre Verfügbarkeit zu markieren."
+      },
+      "step6": {
+        "title": "Planungsbeschränkungen festlegen",
+        "description": "Konfigurieren Sie KI-gestützte Planungsbeschränkungen, einschließlich maximaler aufeinanderfolgender Tage, maximaler Tage pro Monat und benutzerdefinierter Regeln zur Steuerung des Planungsalgorithmus."
+      }
+    },
+    "participantWorkflow": {
+      "title": "Wie es für Teilnehmer funktioniert",
+      "subtitle": "Ein einfacher Prozess, um Ihrem Team beizutreten und Ihre Schichten zu verwalten",
+      "step1": {
+        "title": "Einladung erhalten",
+        "description": "Ihr Team-Host sendet Ihnen eine E-Mail-Einladung, um dem Team beizutreten. Klicken Sie auf den Registrierungslink in der E-Mail, um die Einladung anzunehmen und den Registrierungsprozess zu beginnen."
+      },
+      "step2": {
+        "title": "Registrierung abschließen",
+        "description": "Füllen Sie das einfache Registrierungsformular mit Ihrem Namen aus und erstellen Sie ein sicheres Passwort. Ihre E-Mail ist aus der Einladung vorausgefüllt, was den Prozess schnell und einfach macht."
+      },
+      "step3": {
+        "title": "Auf Ihr Dashboard zugreifen",
+        "description": "Nach der Registrierung sehen Sie Ihr intuitives Dashboard mit schnellem Zugriff auf Verfügbarkeitseinstellung, Schichtänderungsanfragen und Ihren Plan. Alles, was Sie brauchen, ist nur einen Klick entfernt."
+      },
+      "step4": {
+        "title": "Ihre Verfügbarkeit markieren",
+        "description": "Wählen Sie Ihr Team und den Monat aus und klicken Sie dann auf eine beliebige Datums- und Schichtkombination, um durch die Verfügbarkeitsstatus zu wechseln: Verfügbar, Priorität, Nicht verfügbar, Urlaub oder Konferenz. Das System erleichtert die Einstellung Ihrer Präferenzen für den gesamten Monat."
+      },
+      "step5": {
+        "title": "Ihre Präferenzen speichern",
+        "description": "Nachdem Sie alle Ihre Verfügbarkeitspräferenzen markiert haben, klicken Sie auf \"Verfügbarkeit speichern\", um sie zu übermitteln. Sie können auch als Entwurf speichern, wenn Sie zurückkommen und später fertigstellen müssen."
+      },
+      "step6": {
+        "title": "Schichtänderungen anfordern",
+        "description": "Wenn Sie eine zugewiesene Schicht tauschen oder ändern müssen, verwenden Sie die Funktion zur Schichtänderungsanfrage. Wählen Sie Ihre aktuelle Schicht, wählen Sie ein bevorzugtes Datum und einen Schichttyp aus, und das System hilft Ihnen, ein Teammitglied zum Tauschen zu finden. Verfolgen Sie alle Ihre Anfragen an einem Ort."
+      }
+    },
+    "additionalInfo": {
+      "line1": "Entworfen für Krankenhäuser, Kliniken und medizinische Residenz-Teams.",
+      "line2": "Sichere Authentifizierung und rollenbasierte Zugriffskontrolle enthalten."
+    },
+    "comingNext": {
+      "title": "Was kommt als Nächstes",
+      "subtitle": "Wir fangen gerade erst an — hier ist, was wir als Nächstes bauen:",
+      "mobileApps": {
+        "title": "Mobile Apps (iOS & Android)",
+        "description": "Greifen Sie unterwegs auf Ihren Plan zu"
+      },
+      "vacation": {
+        "title": "Urlaubsverwaltung & Schichtanfrageformulare",
+        "description": "Vereinfachte Urlaubsanfragen"
+      },
+      "autoSwap": {
+        "title": "Automatische Tauschgenehmigungen",
+        "description": "Intelligenter Schichttausch leicht gemacht"
+      },
+      "export": {
+        "title": "Bessere Exportoptionen (Excel, PDF usw.)",
+        "description": "Erweiterte Exportfunktionen"
+      },
+      "analytics": {
+        "title": "Team-Analysen und Arbeitslast-Tracking",
+        "description": "Datenbasierte Einblicke für bessere Planung"
+      },
+      "feedback": {
+        "title": "Haben Sie eine Anfrage?",
+        "description": "Sagen Sie es uns direkt von Ihrem Dashboard — wir bauen basierend auf Ihren Bedürfnissen."
+      }
+    },
+    "footer": {
+      "copyright": "Alle Rechte vorbehalten."
+    }
+  }
+}
+

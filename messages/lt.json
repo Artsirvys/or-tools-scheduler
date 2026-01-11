@@ -1,0 +1,129 @@
+{
+  "common": {
+    "appName": "AISchedulator",
+    "signIn": "Prisijungti",
+    "signUp": "Pradėti nemokamai (Ankstyvas prieiga)",
+    "about": "Apie",
+    "pricing": "Kainos"
+  },
+  "landing": {
+    "title": "Automatinis medicininių pamainų planavimas",
+    "subtitle": "Sustokite gaišti valandas su pamainų grafikais",
+    "description": "Mūsų sistema sukuria teisingas medicinines pamainas per sekundes — sukurtą gydytojo, kad pašalintų valandas rankinio planavimo.",
+    "features": {
+      "title": "Viskas, ko reikia efektyviam planavimui",
+      "teamManagement": {
+        "title": "Komandos valdymas",
+        "description": "Kurkite komandas, pridėkite dalyvius ir stebėkite patirtį teisingam planavimui."
+      },
+      "customShifts": {
+        "title": "Individualios pamainos",
+        "description": "Apibrėžkite individualias pamainų valandas ir leiskite komandos nariams pažymėti prieinamumą."
+      },
+      "aiScheduling": {
+        "title": "AI valdomas planavimas",
+        "description": "Generuokite optimalius mėnesio grafikus pagal prieinamumą, patirtį ir pageidavimus."
+      },
+      "export": {
+        "title": "Eksportavimo parinktys",
+        "description": "Pagrindinės eksportavimo parinktys lengvam dalijimuisi ir spausdinimui."
+      },
+      "notifications": {
+        "title": "Pakeitimų pranešimai",
+        "description": "Automatiniai el. pašto pranešimai apie pamainų pakeitimus ir grafiko atnaujinimus."
+      }
+    },
+    "hostWorkflow": {
+      "title": "Kaip tai veikia vadovams",
+      "subtitle": "Paprastas darbo procesas, kad efektyviai suplanuotumėte savo komandas",
+      "step1": {
+        "title": "Pradėti",
+        "description": "Spustelėkite mygtuką \"Sukurti komandą\" savo skydelyje, kad pradėtumėte kurti savo medicininę komandą."
+      },
+      "step2": {
+        "title": "Konfigūruoti komandos detales",
+        "description": "Nustatykite pagrindinę informaciją, įskaitant komandos pavadinimą, skyrių ir reikalingų darbuotojų skaičių per pamainą."
+      },
+      "step3": {
+        "title": "Apibrėžti pamainas",
+        "description": "Konfigūruokite pamainų tipus su laiko tarpais ir darbuotojų reikalavimais savo komandai."
+      },
+      "step4": {
+        "title": "Valdyti savo komandas",
+        "description": "Sukūrus, naudokitės komandos valdymo parinktimis, nustatykite terminus, peržiūrėkite grafikus ir patikrinkite komandos prieinamumą viską vienoje vietoje."
+      },
+      "step5": {
+        "title": "Pakviesti komandos narius",
+        "description": "Siųskite el. pašto pakvietimus komandos nariams prisijungti prie jūsų komandos ir pradėti žymėti savo prieinamumą."
+      },
+      "step6": {
+        "title": "Nustatyti planavimo apribojimus",
+        "description": "Konfigūruokite AI valdomus planavimo apribojimus, įskaitant maksimalius iš eilės dienų, maksimalų dienų per mėnesį skaičių ir individualias taisykles planavimo algoritmui valdyti."
+      }
+    },
+    "participantWorkflow": {
+      "title": "Kaip tai veikia dalyviams",
+      "subtitle": "Paprastas procesas prisijungti prie komandos ir valdyti savo pamainas",
+      "step1": {
+        "title": "Gauti pakvietimą",
+        "description": "Jūsų komandos vadovas išsiųs jums el. pašto pakvietimą prisijungti prie komandos. Spustelėkite registracijos nuorodą el. laiške, kad priimtumėte pakvietimą ir pradėtumėte registracijos procesą."
+      },
+      "step2": {
+        "title": "Užbaigti registraciją",
+        "description": "Užpildykite paprastą registracijos formą su savo vardu ir sukurkite saugų slaptažodį. Jūsų el. paštas yra iš anksto užpildytas iš pakvietimo, todėl procesas yra greitas ir lengvas."
+      },
+      "step3": {
+        "title": "Pasiekti savo skydelį",
+        "description": "Užsiregistravę pamatysite savo intuityvų skydelį su greitu prieiga prie prieinamumo nustatymo, pamainų pakeitimų užklausų ir grafiko peržiūros. Viskas, ko jums reikia, yra tik vienu paspaudimu."
+      },
+      "step4": {
+        "title": "Pažymėti savo prieinamumą",
+        "description": "Pasirinkite savo komandą ir mėnesį, tada spustelėkite bet kurią datos ir pamainos kombinaciją, kad pereitumėte per prieinamumo statusus: Prieinamas, Pirmenybė, Neprieinamas, Atostogos arba Konferencija. Sistema palengvina jūsų pageidavimų nustatymą visam mėnesiui."
+      },
+      "step5": {
+        "title": "Išsaugoti savo pageidavimus",
+        "description": "Pažymėję visus savo prieinamumo pageidavimus, spustelėkite \"Išsaugoti prieinamumą\", kad juos pateiktumėte. Taip pat galite išsaugoti kaip juodraštį, jei reikia grįžti ir užbaigti vėliau."
+      },
+      "step6": {
+        "title": "Užklausti pamainų pakeitimų",
+        "description": "Jei reikia sukeisti arba pakeisti priskirtą pamainą, naudokite pamainų pakeitimų užklausos funkciją. Pasirinkite savo dabartinę pamainą, pasirinkite pageidaujamą datą ir pamainos tipą, ir sistema padės rasti komandos narį su kuriuo sukeisti. Stebėkite visas savo užklausas vienoje vietoje."
+      }
+    },
+    "additionalInfo": {
+      "line1": "Sukurta ligoninėms, klinikoms ir medicininių rezidentūrų komandoms.",
+      "line2": "Įtraukta saugi autentifikacija ir prieigos kontrolė pagal vaidmenis."
+    },
+    "comingNext": {
+      "title": "Kas artėja",
+      "subtitle": "Tik pradedame — štai, ką kuriame toliau:",
+      "mobileApps": {
+        "title": "Mobilieji programėlės (iOS ir Android)",
+        "description": "Pasiekite savo grafiką bet kur"
+      },
+      "vacation": {
+        "title": "Atostogų valdymas ir pamainų užklausų formos",
+        "description": "Supaprastintos laisvo laiko užklausos"
+      },
+      "autoSwap": {
+        "title": "Automatiniai keitimų patvirtinimai",
+        "description": "Protingas pamainų keitimas lengvai"
+      },
+      "export": {
+        "title": "Geresnės eksportavimo parinktys (Excel, PDF ir kt.)",
+        "description": "Patobulintos eksportavimo galimybės"
+      },
+      "analytics": {
+        "title": "Komandos analitika ir darbo krūvio stebėjimas",
+        "description": "Duomenų pagrįstos įžvalgos geresniam planavimui"
+      },
+      "feedback": {
+        "title": "Turite prašymą?",
+        "description": "Pasakykite mums tiesiogiai iš savo skydelio — kuriame pagal jūsų poreikius."
+      }
+    },
+    "footer": {
+      "copyright": "Visos teisės saugomos."
+    }
+  }
+}
+

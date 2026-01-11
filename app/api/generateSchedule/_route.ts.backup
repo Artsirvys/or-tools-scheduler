@@ -1,0 +1,173 @@
+import { NextRequest, NextResponse } from "next/server";
+import OpenAI from "openai";
+import { createClient } from "@supabase/supabase-js";
+
+// ----- Types -----
+interface Shift {
+  id: string;
+  name: string;
+  start_time: string;
+  end_time: string;
+}
+
+interface Member {
+  id: string;
+  name: string;
+}
+
+interface Assignment {
+  schedule_id?: string | null;
+  user_id: string;
+  shift_id: string;
+  date: string;
+  confidence?: number;
+}
+
+interface ParsedSchedule {
+  assignments?: Assignment[];
+}
+
+// ----- Init -----
+const supabaseAdmin = createClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL!,
+  process.env.SUPABASE_SERVICE_ROLE_KEY!
+);
+
+const openai = new OpenAI({
+  apiKey: process.env.OPENAI_API_KEY!,
+});
+
+// ----- API -----
+export async function POST(req: NextRequest) {
+  const { teamId } = await req.json();
+  if (!teamId) {
+    return NextResponse.json({ error: "teamId is required" }, { status: 400 });
+  }
+
+  try {
+    // Fetch constraints, shifts, members, and availability
+    const { data: constraints } = await supabaseAdmin
+      .from("ai_constraints")
+      .select("*")
+      .eq("team_id", teamId)
+      .maybeSingle();
+
+    const { data: shifts } = await supabaseAdmin
+      .from("shifts")
+      .select("*")
+      .eq("team_id", teamId);
+
+    const { data: members } = await supabaseAdmin
+      .from("team_members")
+      .select("user_id, users(name)")
+      .eq("team_id", teamId);
+
+    const { data: availability } = await supabaseAdmin
+      .from("availability")
+      .select("*")
+      .eq("team_id", teamId);
+
+    if (!constraints || !shifts || !members) {
+      return NextResponse.json({ error: "Missing data for schedule generation" }, { status: 400 });
+    }
+
+    // Prepare maps for quick lookup
+    const shiftById = new Map<string, Shift>();
+    const shiftByNameLower = new Map<string, Shift>();
+    for (const s of shifts) {
+      shiftById.set(s.id, s);
+      shiftByNameLower.set(s.name.toLowerCase(), s);
+    }
+
+    const memberById = new Map<string, Member>();
+    const memberByNameLower = new Map<string, Member>();
+
+        for (const m of members) {
+        const name = (m.users as unknown as { name: string })?.name || "";
+        memberById.set(m.user_id, { id: m.user_id, name });
+        memberByNameLower.set(name.toLowerCase(), { id: m.user_id, name });
+    }
+
+
+    // AI prompt
+    const prompt = `
+You are scheduling assistant creating a shift schedule for a team in json format. Given the constraints:
+${JSON.stringify(constraints)}
+
+Available shifts:
+${JSON.stringify(shifts)}
+
+Team members:
+${JSON.stringify(members)}
+
+Availability:
+${JSON.stringify(availability)}
+
+Return JSON in this format:
+{
+  "assignments": [
+    { "user_id": "uuid", "shift_id": "uuid", "date": "YYYY-MM-DD", "confidence": 0.9 }
+  ]
+}
+  If there is not enough data to generate a schedule, return schedule without set logic and ai constraints, but based on fair shift distribution.
+`;
+
+    // Call OpenAI
+    const aiResponse = await openai.chat.completions.create({
+      model: "gpt-4o-mini",
+      messages: [{ role: "system", content: prompt }],
+      temperature: 0,
+    });
+
+    const outputText = aiResponse.choices[0]?.message?.content ?? "";
+
+    // Parse JSON safely
+    let parsed: ParsedSchedule = {};
+    try {
+      parsed = JSON.parse(outputText) as ParsedSchedule;
+    } catch {
+      return NextResponse.json({ error: "Failed to parse schedule output" }, { status: 500 });
+    }
+
+    if (!parsed.assignments || !Array.isArray(parsed.assignments)) {
+      return NextResponse.json({ error: "No valid assignments returned by AI" }, { status: 500 });
+    }
+
+    // Create schedule record
+    const { data: newSchedule, error: scheduleErr } = await supabaseAdmin
+      .from("schedules")
+      .insert({
+        team_id: teamId,
+        month: new Date().getMonth() + 1,
+        year: new Date().getFullYear(),
+        generated_by: null, // Optional: use auth.user.id if available
+        status: "generated",
+      })
+      .select()
+      .single();
+
+    if (scheduleErr || !newSchedule) {
+      return NextResponse.json({ error: "Failed to insert new schedule" }, { status: 500 });
+    }
+
+    // Assign schedule_id
+    const assignmentsWithSchedule: Assignment[] = parsed.assignments.map(a => ({
+      ...a,
+      schedule_id: newSchedule.id,
+    }));
+
+    // Insert assignments
+    const { error: assignErr } = await supabaseAdmin
+      .from("schedule_assignments")
+      .insert(assignmentsWithSchedule);
+
+    if (assignErr) {
+      return NextResponse.json({ error: "Failed to insert assignments" }, { status: 500 });
+    }
+
+    return NextResponse.json({ success: true, schedule: newSchedule });
+  } catch (err) {
+    console.error("Error generating schedule:", err);
+    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
+  }
+}

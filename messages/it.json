@@ -1,0 +1,129 @@
+{
+  "common": {
+    "appName": "AISchedulator",
+    "signIn": "Accedi",
+    "signUp": "Inizia gratuitamente (Accesso anticipato)",
+    "about": "Chi siamo",
+    "pricing": "Prezzi"
+  },
+  "landing": {
+    "title": "Pianificazione automatica dei turni medici",
+    "subtitle": "Smetti di sprecare ore sui programmi dei turni",
+    "description": "Il nostro sistema crea turni medici equi in secondi — creato da un medico per eliminare ore di pianificazione manuale.",
+    "features": {
+      "title": "Tutto ciò di cui hai bisogno per una pianificazione efficiente",
+      "teamManagement": {
+        "title": "Gestione del team",
+        "description": "Crea team, aggiungi partecipanti e traccia i livelli di esperienza per una pianificazione equa."
+      },
+      "customShifts": {
+        "title": "Turni personalizzati",
+        "description": "Definisci orari di turno personalizzati e lascia che i membri del team segnino la disponibilità."
+      },
+      "aiScheduling": {
+        "title": "Pianificazione alimentata da AI",
+        "description": "Genera programmi mensili ottimali basati su disponibilità, esperienza e preferenze."
+      },
+      "export": {
+        "title": "Opzioni di esportazione",
+        "description": "Opzioni di esportazione di base per una facile condivisione e stampa."
+      },
+      "notifications": {
+        "title": "Notifiche di modifica",
+        "description": "Notifiche email automatiche per modifiche ai turni e aggiornamenti del programma."
+      }
+    },
+    "hostWorkflow": {
+      "title": "Come funziona per gli host",
+      "subtitle": "Un semplice flusso di lavoro per pianificare i tuoi team in modo efficiente",
+      "step1": {
+        "title": "Inizia",
+        "description": "Clicca il pulsante \"Crea team\" nella tua dashboard per iniziare a configurare il tuo team medico."
+      },
+      "step2": {
+        "title": "Configura i dettagli del team",
+        "description": "Configura le informazioni di base inclusi nome del team, dipartimento e lavoratori richiesti per turno."
+      },
+      "step3": {
+        "title": "Definisci i turni",
+        "description": "Configura i tipi di turno con fasce orarie e requisiti dei lavoratori per il tuo team."
+      },
+      "step4": {
+        "title": "Gestisci i tuoi team",
+        "description": "Una volta creato, accedi alle opzioni di gestione del team, imposta le scadenze, visualizza i programmi e controlla la disponibilità del team tutto in un unico posto."
+      },
+      "step5": {
+        "title": "Invita i membri del team",
+        "description": "Invia inviti via email ai membri del team per unirsi al tuo team e iniziare a segnare la loro disponibilità."
+      },
+      "step6": {
+        "title": "Imposta i vincoli di pianificazione",
+        "description": "Configura i vincoli di pianificazione alimentati da AI inclusi giorni massimi consecutivi, giorni massimi per mese e regole personalizzate per guidare l'algoritmo di pianificazione."
+      }
+    },
+    "participantWorkflow": {
+      "title": "Come funziona per i partecipanti",
+      "subtitle": "Un processo semplice per unirti al tuo team e gestire i tuoi turni",
+      "step1": {
+        "title": "Ricevi l'invito",
+        "description": "L'host del tuo team ti invierà un invito via email per unirti al team. Clicca sul link di registrazione nell'email per accettare l'invito e iniziare il processo di registrazione."
+      },
+      "step2": {
+        "title": "Completa la registrazione",
+        "description": "Compila il semplice modulo di registrazione con il tuo nome e crea una password sicura. La tua email è precompilata dall'invito, rendendo il processo veloce e facile."
+      },
+      "step3": {
+        "title": "Accedi alla tua dashboard",
+        "description": "Una volta registrato, vedrai la tua dashboard intuitiva con accesso rapido per impostare la disponibilità, richiedere modifiche ai turni e visualizzare il tuo programma. Tutto ciò di cui hai bisogno è a un solo clic."
+      },
+      "step4": {
+        "title": "Segna la tua disponibilità",
+        "description": "Seleziona il tuo team e il mese, quindi clicca su qualsiasi combinazione di data e turno per passare attraverso gli stati di disponibilità: Disponibile, Priorità, Non disponibile, Vacanza o Conferenza. Il sistema rende facile impostare le tue preferenze per l'intero mese."
+      },
+      "step5": {
+        "title": "Salva le tue preferenze",
+        "description": "Una volta segnate tutte le tue preferenze di disponibilità, clicca \"Salva disponibilità\" per inviarle. Puoi anche salvare come bozza se devi tornare e finire più tardi."
+      },
+      "step6": {
+        "title": "Richiedi modifiche ai turni",
+        "description": "Se devi scambiare o cambiare un turno assegnato, usa la funzione di richiesta di modifica del turno. Seleziona il tuo turno corrente, scegli una data e un tipo di turno preferiti, e il sistema ti aiuterà a trovare un membro del team con cui scambiare. Tieni traccia di tutte le tue richieste in un unico posto."
+      }
+    },
+    "additionalInfo": {
+      "line1": "Progettato per ospedali, cliniche e team di residenza medica.",
+      "line2": "Include autenticazione sicura e controllo di accesso basato sui ruoli."
+    },
+    "comingNext": {
+      "title": "Cosa sta arrivando",
+      "subtitle": "Stiamo appena iniziando — ecco cosa stiamo costruendo:",
+      "mobileApps": {
+        "title": "App mobili (iOS e Android)",
+        "description": "Accedi al tuo programma in movimento"
+      },
+      "vacation": {
+        "title": "Gestione delle vacanze e moduli di richiesta turni",
+        "description": "Richieste di permesso semplificate"
+      },
+      "autoSwap": {
+        "title": "Approvazioni automatiche degli scambi",
+        "description": "Scambio intelligente di turni con facilità"
+      },
+      "export": {
+        "title": "Migliori opzioni di esportazione (Excel, PDF, ecc.)",
+        "description": "Capacità di esportazione avanzate"
+      },
+      "analytics": {
+        "title": "Analisi del team e tracciamento del carico di lavoro",
+        "description": "Informazioni basate sui dati per una migliore pianificazione"
+      },
+      "feedback": {
+        "title": "Hai una richiesta?",
+        "description": "Dircelo direttamente dalla tua dashboard — costruiamo in base alle tue esigenze."
+      }
+    },
+    "footer": {
+      "copyright": "Tutti i diritti riservati."
+    }
+  }
+}
+
