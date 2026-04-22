@@ -83,13 +83,13 @@ class ScheduleSolver:
             # This constraint limits the total number of shift assignments per worker per month
             # The constraint key 'max_days_per_month' is kept for backward compatibility
             logging.info("Adding max shifts per month constraint...")
-            self._add_max_shifts_per_month_constraint(x, members, shifts, days_in_month, constraints)
+            self._add_max_shifts_per_month_constraint(x, members, shifts, availability, days_in_month, constraints)
             
             # 3.5. FAIR DISTRIBUTION (Hard constraint)
             # This constraint ensures equal distribution of shifts among team members
             # Maximum difference between any two members' shift counts should be at most 1
             logging.info("Adding fair distribution constraint...")
-            self._add_fair_distribution_hard_constraint(x, members, shifts, days_in_month, constraints)
+            self._add_fair_distribution_hard_constraint(x, members, shifts, availability, days_in_month, constraints)
             
             # 4. MAX CONSECUTIVE SHIFTS (Hard constraint)
             # This constraint limits how many shifts in a row a worker can be assigned
@@ -182,8 +182,8 @@ class ScheduleSolver:
                         continue
                         
                     if availability_entry:
-                        if availability_entry['status'] == 'unavailable':
-                            # Force assignment to 0 if unavailable
+                        if availability_entry['status'] in ('unavailable', 'vacation', 'conference'):
+                            # Force assignment to 0 if not schedulable
                             self.model.Add(x[m, s, d] == 0)
                             constraints_added += 1
                             logging.debug(f"Added constraint: {members[m]['name']} cannot work {shifts[s]['name']} on {date_str}")
@@ -230,7 +230,126 @@ class ScheduleSolver:
         
         logging.info(f"Added {constraints_added} workers per shift constraints")
     
-    def _get_member_total_shift_limits(self, members, constraints):
+    def _extract_constraint_type_and_parameters(self, constraint):
+        """Read constraint type/parameters from either top-level or ai_translation payload."""
+        constraint_type = constraint.get('constraint_type', '')
+        parameters = constraint.get('parameters', {})
+
+        if 'ai_translation' in constraint:
+            ai_translation = constraint.get('ai_translation', {}) or {}
+            if not constraint_type:
+                constraint_type = ai_translation.get('constraint_type', '')
+            parameters = ai_translation.get('parameters', {}) or {}
+
+        return constraint_type, parameters
+
+    def _collect_vacation_days_per_member(self, availability):
+        """Collect unique vacation dates per member from availability entries."""
+        vacation_days_by_member = {}
+
+        if not isinstance(availability, list):
+            return vacation_days_by_member
+
+        for entry in availability:
+            if not isinstance(entry, dict):
+                continue
+
+            member_id = entry.get('user_id')
+            date_value = entry.get('date')
+            status = entry.get('status')
+            original_status = entry.get('original_status')
+
+            # Prefer the original status when provided by API normalization.
+            effective_status = original_status or status
+            if effective_status != 'vacation' or not member_id or not date_value:
+                continue
+
+            if member_id not in vacation_days_by_member:
+                vacation_days_by_member[member_id] = set()
+            vacation_days_by_member[member_id].add(date_value)
+
+        return vacation_days_by_member
+
+    def _resolve_vacation_adjusted_limit(self, default_max, vacation_days_count, rule_parameters):
+        """Apply tiered vacation-based reduction to max monthly shifts."""
+        if not isinstance(rule_parameters, dict):
+            rule_parameters = {}
+
+        try:
+            apply_if_at_least = int(rule_parameters.get('apply_if_vacation_days_at_least', 1))
+        except (TypeError, ValueError):
+            apply_if_at_least = 1
+        if vacation_days_count < apply_if_at_least:
+            return default_max
+
+        tiers = rule_parameters.get('tiers', [])
+        if not isinstance(tiers, list) or len(tiers) == 0:
+            tiers = [
+                {"max_vacation_days": 9, "reduction_percent": 25},
+                {"max_vacation_days": 16, "reduction_percent": 50},
+                {"max_vacation_days": 28, "reduction_percent": 75},
+            ]
+
+        valid_tiers = []
+        for tier in tiers:
+            if not isinstance(tier, dict):
+                continue
+            max_days = tier.get('max_vacation_days')
+            reduction_percent = tier.get('reduction_percent')
+            if max_days is None or reduction_percent is None:
+                continue
+            try:
+                valid_tiers.append({
+                    "max_vacation_days": int(max_days),
+                    "reduction_percent": float(reduction_percent),
+                })
+            except (TypeError, ValueError):
+                continue
+
+        if not valid_tiers:
+            return default_max
+
+        valid_tiers.sort(key=lambda t: t["max_vacation_days"])
+
+        selected_reduction_percent = None
+        for tier in valid_tiers:
+            if vacation_days_count <= tier["max_vacation_days"]:
+                selected_reduction_percent = tier["reduction_percent"]
+                break
+
+        if selected_reduction_percent is None:
+            # For values above the largest tier, apply the strongest configured reduction.
+            selected_reduction_percent = valid_tiers[-1]["reduction_percent"]
+
+        reduction_ratio = max(0.0, min(selected_reduction_percent / 100.0, 1.0))
+        adjusted_limit = int(default_max * (1.0 - reduction_ratio))
+        return max(0, adjusted_limit)
+
+    def _looks_like_vacation_adjusted_cap_rule(self, constraint, constraint_type):
+        """Detect vacation-adjusted cap intent from raw/custom text when AI type is imperfect."""
+        if constraint_type == 'vacation_adjusted_monthly_cap':
+            return True
+
+        raw_text = str(constraint.get('raw_text', '') or '').lower()
+        if not raw_text:
+            return False
+
+        has_vacation_word = 'vacation' in raw_text
+        has_cap_word = (
+            'max days per month' in raw_text
+            or 'monthly cap' in raw_text
+            or 'max monthly shifts' in raw_text
+            or 'reduce max' in raw_text
+        )
+        has_default_tiers = (
+            ('9' in raw_text and '25' in raw_text)
+            and ('16' in raw_text and '50' in raw_text)
+            and ('28' in raw_text and '75' in raw_text)
+        )
+
+        return has_vacation_word and (has_cap_word or has_default_tiers)
+
+    def _get_member_total_shift_limits(self, members, availability, constraints):
         """Get effective total shift limit for each member
         
         Returns a dict mapping member_id to their effective max shifts:
@@ -240,6 +359,20 @@ class ScheduleSolver:
         default_max = constraints.get('max_days_per_month', 31)
         member_limits = {}
         custom_constraints = constraints.get('custom_constraints', [])
+        vacation_days_by_member = self._collect_vacation_days_per_member(availability)
+        vacation_adjustment_rules = []
+
+        for constraint in custom_constraints:
+            if constraint.get('status') != 'translated':
+                continue
+            constraint_type, parameters = self._extract_constraint_type_and_parameters(constraint)
+            if self._looks_like_vacation_adjusted_cap_rule(constraint, constraint_type):
+                vacation_adjustment_rules.append(parameters)
+                if constraint_type != 'vacation_adjusted_monthly_cap':
+                    logging.info(
+                        "Detected vacation-adjusted monthly cap intent from raw text; "
+                        "using default/available tier parameters"
+                    )
         
         # For each member, check if they have shift-specific limits that effectively limit total shifts
         # We'll sum up all their per-shift-type limits to get an effective total limit
@@ -253,15 +386,7 @@ class ScheduleSolver:
             for constraint in custom_constraints:
                 if constraint.get('status') != 'translated':
                     continue
-                    
-                constraint_type = constraint.get('constraint_type', '')
-                if 'ai_translation' in constraint:
-                    ai_translation = constraint.get('ai_translation', {})
-                    if not constraint_type:
-                        constraint_type = ai_translation.get('constraint_type', '')
-                    parameters = ai_translation.get('parameters', {})
-                else:
-                    parameters = constraint.get('parameters', {})
+                constraint_type, parameters = self._extract_constraint_type_and_parameters(constraint)
                 
                 # Check if this is a member_monthly_shift_limit for this member
                 if constraint_type == 'member_monthly_shift_limit':
@@ -287,10 +412,27 @@ class ScheduleSolver:
             else:
                 # No custom limits, use default
                 member_limits[member_id] = default_max
+
+            # Apply any team-wide vacation-adjusted cap rules as a hard cap.
+            if vacation_adjustment_rules:
+                vacation_days_count = len(vacation_days_by_member.get(member_id, set()))
+                for rule in vacation_adjustment_rules:
+                    adjusted_limit = self._resolve_vacation_adjusted_limit(
+                        default_max,
+                        vacation_days_count,
+                        rule,
+                    )
+                    if adjusted_limit < member_limits[member_id]:
+                        logging.info(
+                            f"Applying vacation-adjusted cap for {member.get('name', member_id)}: "
+                            f"{member_limits[member_id]} -> {adjusted_limit} "
+                            f"(vacation days: {vacation_days_count})"
+                        )
+                        member_limits[member_id] = adjusted_limit
         
         return member_limits
     
-    def _add_max_shifts_per_month_constraint(self, x, members, shifts, days_in_month, constraints):
+    def _add_max_shifts_per_month_constraint(self, x, members, shifts, availability, days_in_month, constraints):
         """Limit maximum shift assignments per month per worker
         
         Applies individual limits per member:
@@ -302,7 +444,7 @@ class ScheduleSolver:
         logging.info(f"Adding max shifts per month constraint: default {default_max_shifts} shifts per worker")
         
         # Get member-specific limits (reusing the helper method)
-        member_limits = self._get_member_total_shift_limits(members, constraints)
+        member_limits = self._get_member_total_shift_limits(members, availability, constraints)
         
         constraints_added = 0
         for m in range(len(members)):
@@ -321,7 +463,7 @@ class ScheduleSolver:
         
         logging.info(f"Added {constraints_added} max shifts per month constraints")
     
-    def _add_fair_distribution_hard_constraint(self, x, members, shifts, days_in_month, constraints):
+    def _add_fair_distribution_hard_constraint(self, x, members, shifts, availability, days_in_month, constraints):
         """Ensure fair distribution of shifts among team members
         
         This constraint ensures that the maximum difference between any two members' 
@@ -337,7 +479,7 @@ class ScheduleSolver:
             return
         
         # Get effective limits for each member
-        member_limits = self._get_member_total_shift_limits(members, constraints)
+        member_limits = self._get_member_total_shift_limits(members, availability, constraints)
         default_max = constraints.get('max_days_per_month', 31)
         
         # Identify members with custom limits (limits different from default)
@@ -475,6 +617,9 @@ class ScheduleSolver:
                     logging.info(f"Workload distribution constraint handled by multi-objective optimization")
                 elif constraint_type == 'member_monthly_shift_limit':
                     constraints_added += self._add_member_monthly_shift_limit_constraint(x, members, shifts, days_in_month, parameters)
+                elif constraint_type == 'vacation_adjusted_monthly_cap':
+                    # This is applied indirectly by member-specific monthly limit resolution.
+                    logging.info("Vacation-adjusted monthly cap will be applied via max_days_per_month resolution")
                 else:
                     logging.warning(f"Unknown custom constraint type: {constraint_type}")
                     
