@@ -42,7 +42,7 @@
       },
       "step2": {
         "title": "Teamdetails konfigurieren",
-        "description": "Richten Sie grundlegende Informationen ein, einschließlich Teamname, Abteilung und erforderlicher Mitarbeiter pro Schicht."
+        "description": "Richten Sie grundlegende Informationen ein, z. B. Teamname und eine optionale Beschreibung."
       },
       "step3": {
         "title": "Schichten definieren",
@@ -123,6 +123,338 @@
     },
     "footer": {
       "copyright": "Alle Rechte vorbehalten."
+    }
+  },
+  "participant": {
+    "dashboard": {
+      "loading": "Dashboard wird geladen...",
+      "hello": "Hallo",
+      "participant": "Teilnehmer",
+      "overviewSubtitle": "Hier ist Ihre Schichtübersicht",
+      "supportProject": "Projekt unterstützen",
+      "sendFeedback": "Feedback senden",
+      "logOut": "Abmelden",
+      "setAvailability": "Meine Verfügbarkeit festlegen",
+      "setAvailabilityDesc": "Markieren Sie, wann Sie arbeiten können",
+      "requestShiftChange": "Schichtwechsel anfragen",
+      "requestShiftChangeDesc": "Schichten tauschen oder ändern",
+      "viewSchedule": "Dienstplan ansehen",
+      "viewScheduleDesc": "Sehen Sie Ihre zugewiesenen Schichten",
+      "tabs": {
+        "overview": "Meine Übersicht",
+        "team": "Mein Team"
+      },
+      "nextShifts": "Meine nächsten Schichten",
+      "loadingShifts": "Ihre Schichten werden geladen...",
+      "noTeam": "Sie sind keinem Team zugewiesen",
+      "noTeamDesc": "Kontaktieren Sie Ihren Administrator, um einem Team hinzugefügt zu werden",
+      "noShifts": "Keine bevorstehenden Schichten geplant",
+      "noShiftsDesc": "Hier sehen Sie Ihre Schichten, sobald sie Ihnen zugewiesen sind",
+      "status": {
+        "confirmed": "Bestätigt",
+        "changeRequested": "Änderung angefragt"
+      },
+      "change": "Ändern",
+      "newNotifications": "Neue Benachrichtigungen",
+      "noNotifications": "Keine neuen Benachrichtigungen",
+      "noNotificationsDesc": "Hier sehen Sie Schichtwechselanfragen, sobald sie eingehen",
+      "accept": "Annehmen",
+      "decline": "Ablehnen",
+      "selectTeamToView": "Team zur Ansicht auswählen",
+      "selectTeamToViewDesc": "Wählen Sie ein Team aus, um Mitglieder und Details zu sehen",
+      "notifications": {
+        "wantsToSwap": "möchte tauschen",
+        "on": "am",
+        "withYour": "mit Ihrer",
+        "unknownUser": "Unbekannter Benutzer",
+        "unknownShift": "Unbekannte Schicht",
+        "unknownTeam": "Unbekanntes Team",
+        "unknownTime": "Unbekannte Zeit"
+      },
+      "time": {
+        "justNow": "Gerade eben",
+        "oneHourAgo": "vor 1 Stunde",
+        "hoursAgo": "Stunden her",
+        "oneDayAgo": "vor 1 Tag",
+        "daysAgo": "Tage her"
+      },
+      "alerts": {
+        "openShiftChangeFailed": "Schichtwechselanfrage konnte nicht geöffnet werden",
+        "userNotAuthenticated": "Benutzer nicht authentifiziert",
+        "processRequestFailed": "Anfrage konnte nicht verarbeitet werden",
+        "acceptedSuccess": "Schichtwechsel angenommen! Ihr Plan wurde aktualisiert.",
+        "acceptFailed": "Anfrage konnte nicht angenommen werden",
+        "declineFailed": "Anfrage konnte nicht abgelehnt werden",
+        "declinedSuccess": "Schichtwechselanfrage abgelehnt."
+      },
+      "donation": {
+        "title": "AISchedulator unterstützen",
+        "line1": "Wenn AISchedulator Ihnen oder Ihrem Team hilft, können Sie die Entwicklung unterstützen.",
+        "line2": "Jede Spende hilft, das Projekt am Leben zu halten und neue Funktionen zu finanzieren. ❤️"
+      },
+      "close": "Schließen"
+    },
+    "availability": {
+      "title": "Verfügbarkeit festlegen",
+      "backToDashboard": "Zurück zum Dashboard",
+      "loading": "Ihre Verfügbarkeitseinstellungen werden geladen...",
+      "noTeamTitle": "Sie sind noch keinem Team zugewiesen",
+      "noTeamDesc": "Bitte kontaktieren Sie Ihren Administrator, um einem Team hinzugefügt zu werden, bevor Sie Verfügbarkeiten festlegen.",
+      "selectTeam": "Team auswählen",
+      "selectMonth": "Monat auswählen",
+      "legendTitle": "Verfügbarkeitslegende",
+      "legendDesc": "Klicken Sie auf eine beliebige Datums-/Schichtkombination, um Ihre Verfügbarkeit festzulegen. Unbearbeitete Tage gelten als verfügbar.",
+      "date": "Datum",
+      "range": {
+        "trigger": "Zeitraum",
+        "titleAll": "Alle Schichten (diese Spalte)",
+        "titleShift": "Diese Schichtspalte",
+        "hintAll": "Jede Schichtspalte erhält diese Verfügbarkeit für die Tage im Zeitraum (nur an Tagen, an denen die Schicht gilt).",
+        "hintShift": "Nur Tage, an denen diese Schicht in der Tabelle erscheint, werden geändert (wie einzelne Zellen).",
+        "from": "Von",
+        "to": "Bis",
+        "statusLabel": "Verfügbarkeit",
+        "apply": "Auf Zeitraum anwenden",
+        "ariaAll": "Verfügbarkeit für einen Datumsbereich für alle Schichten setzen",
+        "ariaShiftPrefix": "Datumsbereich setzen für Spalte"
+      },
+      "copy": {
+        "trigger": "Vom Vormonat kopieren",
+        "title": "Vormonat kopieren",
+        "desc": "Gespeicherte Verfügbarkeit von {prev} nach {current} übernehmen. Überschneidende Tage in der Tabelle werden überschrieben (nur noch vorhandene Schichttypen).",
+        "dayOfMonth": "Gleicher Kalendertag",
+        "dayOfMonthHelp": "Der 10. wird zum 10. Tage dieses Monats. Tage, die es hier nicht gibt, werden übersprungen (z. B. 31. in einem 30-Tage-Monat).",
+        "weekday": "Gleiche Wochentag-Position",
+        "weekdayHelp": "Entspricht der Reihenfolge im Monat (z. B. 2. Dienstag → 2. Dienstag). Wird übersprungen, wenn es dieses Vorkommen nicht gibt.",
+        "cancel": "Abbrechen",
+        "apply": "Kopieren",
+        "applying": "Kopiere…",
+        "empty": "Im Vormonat wurde keine Verfügbarkeit gespeichert.",
+        "success": "Verfügbarkeit aus dem Vormonat übernommen. Bitte prüfen und speichern.",
+        "failed": "Kopieren fehlgeschlagen. Bitte erneut versuchen."
+      },
+      "dragFill": {
+        "lead": "Schichtzelle tippen zum Weiterschalten. Pinsel wählen, dann halten (~0,2s) oder ziehen. Seite an der Datumsspalte links scrollen.",
+        "brush": "Ziehen füllt mit"
+      },
+      "bulk": {
+        "title": "Schnell: als nicht verfügbar markieren",
+        "desc": "Gilt für den unten angezeigten Monat. Nur Zellen, die in der Tabelle vorkommen, werden geändert.",
+        "weekends": "Alle Wochenenden als nicht verfügbar",
+        "workdays": "Alle Werktage als nicht verfügbar",
+        "shiftSection": "Nach Schichttyp",
+        "shiftHint": "Wählen Sie eine oder mehrere Schichtspalten für dieses Team.",
+        "noShifts": "Keine Schichten für dieses Team.",
+        "selectAllShifts": "Alle auswählen",
+        "clearShifts": "Leeren",
+        "applyShifts": "Ausgewählte Schichten als nicht verfügbar",
+        "weekdaySection": "Nach Wochentag",
+        "weekdayHint": "Tage wählen; an diesen Tagen werden alle Schichtspalten im Monat auf nicht verfügbar gesetzt.",
+        "selectAllDays": "Alle auswählen",
+        "clearDays": "Leeren",
+        "applyWeekdays": "Ausgewählte Tage als nicht verfügbar"
+      },
+      "status": {
+        "available": "Verfügbar",
+        "availableDesc": "Ich kann diese Schicht arbeiten",
+        "priority": "Priorität",
+        "priorityDesc": "Ich arbeite diese Schicht bevorzugt",
+        "unavailable": "Nicht verfügbar",
+        "unavailableDesc": "Ich kann diese Schicht nicht arbeiten",
+        "vacation": "Urlaub",
+        "vacationDesc": "Im Urlaub",
+        "conference": "Konferenz",
+        "conferenceDesc": "Auf Konferenz",
+        "notSet": "Nicht gesetzt",
+        "notSetDesc": "Explizit keine Präferenz (nach den anderen Status)"
+      },
+      "alerts": {
+        "saveFailed": "Verfügbarkeit konnte nicht gespeichert werden",
+        "saveSuccess": "Verfügbarkeit erfolgreich gespeichert!",
+        "draftSaved": "Verfügbarkeit als Entwurf gespeichert! Sie können später weiterbearbeiten."
+      },
+      "saveDraft": "Als Entwurf speichern",
+      "saveAvailability": "Verfügbarkeit speichern",
+      "saving": "Speichern..."
+    },
+    "shiftChange": {
+      "title": "Schichtwechselanfragen",
+      "backToDashboard": "Zurück zum Dashboard",
+      "loading": "Schichtwechseldaten werden geladen...",
+      "requestTitle": "Schichtwechsel anfragen",
+      "requestDesc": "Beantragen Sie den Wechsel einer Ihrer zugewiesenen Schichten mit einem Teammitglied",
+      "selectTeam": "Team auswählen",
+      "noTeams": "Keine Teams verfügbar",
+      "currentShift": "Aktuelle Schicht zum Ändern",
+      "currentShiftPlaceholder": "Wählen Sie Ihre zu ändernde Schicht",
+      "noShiftsForTeam": "Keine kommenden Schichten für dieses Team verfügbar",
+      "selectTeamFirst": "Bitte wählen Sie zuerst ein Team aus",
+      "preferredDate": "Bevorzugtes neues Datum",
+      "pickDate": "Datum wählen",
+      "showAvailableDates": "Klicken Sie hier, um verfügbare Daten zu sehen",
+      "howItWorks": "So funktioniert's",
+      "howItWorksDesc": "Wählen Sie ein Datum, an dem jemand anderes in Ihrem Team arbeitet, und den gewünschten Schichttyp. Das System findet ein Teammitglied mit dieser Schicht und sendet eine Tauschanfrage.",
+      "preferredShift": "Bevorzugte neue Schicht",
+      "preferredShiftPlaceholder": "Bevorzugte Schichtzeit auswählen",
+      "noShiftsAnyTeam": "Keine Schichten für Ihre Teams verfügbar",
+      "reasonOptional": "Grund für den Wechsel (optional)",
+      "reasonPlaceholder": "Erklären Sie, warum Sie diese Schicht ändern müssen...",
+      "sending": "Anfrage wird gesendet...",
+      "sendRequest": "Wechselanfrage senden",
+      "pendingTitle": "Offene Anfragen",
+      "pendingDesc": "Schichtwechselanfragen, die Ihre Antwort benötigen",
+      "myRequests": "Meine Anfragen",
+      "myRequestsDesc": "Verfolgen Sie den Status Ihrer Schichtwechselanfragen",
+      "original": "Ursprünglich",
+      "requested": "Gewünscht",
+      "message": "Nachricht",
+      "unknownShift": "Unbekannte Schicht",
+      "unknownTeam": "Unbekanntes Team",
+      "noPending": "Keine offenen Anfragen",
+      "noRequestsYet": "Noch keine Anfragen",
+      "accept": "Annehmen",
+      "decline": "Ablehnen",
+      "status": {
+        "pending": "Ausstehend",
+        "approved": "Genehmigt",
+        "rejected": "Abgelehnt"
+      },
+      "time": {
+        "justNow": "Gerade eben",
+        "oneHourAgo": "vor 1 Stunde",
+        "hoursAgo": "Stunden her",
+        "oneDayAgo": "vor 1 Tag",
+        "daysAgo": "Tage her"
+      },
+      "confirm": {
+        "title": "Bitte bestätigen Sie Ihre Schichtwechselanfrage",
+        "from": "Von",
+        "to": "Zu",
+        "team": "Team",
+        "on": "am",
+        "reason": "Grund",
+        "footer": "Das System findet ein Teammitglied mit der gewünschten Schicht und sendet ihm eine Tauschanfrage. Möchten Sie fortfahren?"
+      },
+      "alerts": {
+        "userNotAuthenticated": "Benutzer nicht authentifiziert. Bitte melden Sie sich erneut an.",
+        "selectTeamFirst": "Bitte wählen Sie zuerst ein Team aus.",
+        "selectCurrentShift": "Bitte wählen Sie die Schicht aus, die Sie ändern möchten.",
+        "selectPreferredDate": "Bitte wählen Sie Ihr bevorzugtes neues Datum aus.",
+        "selectPreferredShift": "Bitte wählen Sie Ihre bevorzugte neue Schichtzeit aus.",
+        "futureDateOnly": "Bitte wählen Sie ein zukünftiges Datum für Ihre bevorzugte Schicht.",
+        "shiftDataMissing": "Schichtdaten nicht gefunden. Bitte versuchen Sie es erneut.",
+        "noShiftsAvailable": "Keine Schichten verfügbar. Bitte prüfen Sie Ihre Teamzuweisungen.",
+        "selectedShiftNotFound": "Ausgewählte Schicht nicht gefunden",
+        "availableDatesNext30": "Verfügbare Daten in den nächsten 30 Tagen",
+        "noScheduledShiftsNext30": "Für Ihr Team wurden in den nächsten 30 Tagen keine geplanten Schichten gefunden.",
+        "noShiftsOnDatePrefix": "Für Ihr Team sind aktuell keine Schichten geplant am",
+        "noShiftsOnDateBody": "Das kann bedeuten:\n\n1. Der Plan wurde für dieses Datum noch nicht erstellt\n2. An diesem Datum sind keine Teammitglieder eingeteilt\n3. Das Datum liegt außerhalb des aktuellen Planungszeitraums\n\nBitte kontaktieren Sie Ihren Team-Host, damit Schichten für dieses Datum geplant werden, oder wählen Sie ein anderes Datum.",
+        "errorFindingTeamMembers": "Fehler beim Finden der Teammitglieder",
+        "errorFindingAvailableShifts": "Fehler beim Finden verfügbarer Schichten",
+        "noAssignmentsOnDate": "Niemand in Ihrem Team ist an diesem Datum Schichten zugewiesen:",
+        "noMatchingShiftPrefix": "Niemand in Ihrem Team ist einer",
+        "noMatchingShiftOn": "Schicht zugewiesen am",
+        "availableShiftsOnDate": "Verfügbare Schichten an diesem Datum",
+        "pickDifferentShiftOrDate": "Bitte wählen Sie einen anderen Schichttyp oder ein anderes Datum.",
+        "noShiftDetails": "Für die verfügbaren Zuweisungen konnten keine Schichtdetails abgerufen werden. Möglicherweise liegt ein Datenzugriffsproblem vor.",
+        "createRequestFailed": "Schichtwechselanfrage konnte nicht erstellt werden",
+        "requestSent": "Schichtwechselanfrage erfolgreich gesendet!",
+        "submitFailed": "Anfrage konnte nicht gesendet werden",
+        "processFailed": "Anfrage konnte nicht verarbeitet werden",
+        "acceptSuccess": "Schichtwechselanfrage angenommen und Schichten erfolgreich getauscht!",
+        "declineFailed": "Anfrage konnte nicht abgelehnt werden",
+        "declineSuccess": "Anfrage erfolgreich abgelehnt!"
+      }
+    },
+    "schedule": {
+      "title": "Mein Teamdienstplan",
+      "backToDashboard": "Zurück zum Dashboard",
+      "loading": "Plandaten werden geladen...",
+      "teamScheduleFor": "Ihr Teamdienstplan für",
+      "members": "Mitglieder",
+      "selectMonth": "Monat auswählen",
+      "currentSchedule": "Aktueller Plan",
+      "currentScheduleDesc": "Dieser Plan wurde unter Berücksichtigung der Verfügbarkeit und Präferenzen aller erstellt",
+      "scheduleDetails": "Plangetails",
+      "details": {
+        "fair": "Faire Verteilung der Schichten",
+        "availability": "Basierend auf Ihrer Verfügbarkeit",
+        "coverage": "Optimiert für Teamabdeckung"
+      },
+      "lastUpdated": "Zuletzt aktualisiert",
+      "at": "um",
+      "schedule": "Plan",
+      "shiftTypes": "Schichttypen",
+      "shiftTypesDescA": "Dieses Team hat",
+      "shiftTypesDescB": "Schichttyp",
+      "shiftTypesDescC": "mit variierenden Zeiten je nach Wochentag.",
+      "shiftTypesDescD": "Jede Spalte stellt einen zusammengefassten Schichttyp dar, der je nach Tag unterschiedliche Zeiträume haben kann.",
+      "date": "Datum",
+      "you": "Sie",
+      "unassigned": "Nicht zugewiesen",
+      "legend": "Planlegende",
+      "legendYourShifts": "Ihre Schichten",
+      "legendTeamShifts": "Schichten der Teammitglieder",
+      "teamSchedule": "Teamplan",
+      "teamNotFoundDesc": "Team nicht gefunden oder Sie haben keinen Zugriff auf dieses Team",
+      "exportPdf": "PDF exportieren",
+      "accessDenied": "Zugriff verweigert",
+      "accessDeniedDesc": "Sie haben keinen Zugriff auf den Plan dieses Teams",
+      "teamNotFound": "Team nicht gefunden",
+      "teamNotFoundLong": "Das gesuchte Team existiert nicht oder Sie haben keine Berechtigung, seinen Plan zu sehen.",
+      "alerts": {
+        "exported": "Plan als PDF exportiert! Bitte prüfen Sie Ihren Downloads-Ordner."
+      }
+    }
+  },
+  "hostTeamAvailability": {
+    "remindButton": "Erinnerung senden",
+    "remindSending": "Wird gesendet…",
+    "remindNone": "Keine Erinnerungen nötig — alle haben für diesen Monat mindestens eine Verfügbarkeit eingetragen.",
+    "remindSuccess": "{count} Erinnerungs-E-Mail(s) gesendet.",
+    "remindNoShifts": "Legen Sie mindestens eine Schichtart an, bevor Sie Erinnerungen senden.",
+    "remindPartial": "Hinweise: {failed} fehlgeschlagen, {skipped} übersprungen (keine E-Mail).",
+    "remindFailed": "Erinnerungen konnten nicht gesendet werden. Bitte erneut versuchen."
+  },
+  "auth": {
+    "signin": {
+      "title": "Welcome back",
+      "description": "Sign in to your account to continue",
+      "descriptionWithInvitation": "Sign in to complete your team invitation",
+      "teamInvitation": "Team Invitation",
+      "joiningTeam": "You're joining",
+      "email": "Email",
+      "password": "Password",
+      "emailPlaceholder": "doctor@hospital.com",
+      "passwordPlaceholder": "Enter your password",
+      "signInButton": "Sign In",
+      "signingIn": "Signing in...",
+      "forgotPassword": "Forgot your password?",
+      "noAccount": "Don't have an account?",
+      "signUpLink": "Sign up",
+      "loading": "Loading sign in...",
+      "messages": {
+        "emailConfirmed": {
+          "title": "Email Successfully Confirmed!",
+          "description": "Your email has been confirmed. Please sign in to continue."
+        },
+        "linkExpired": {
+          "title": "Confirmation Link Expired",
+          "description": "The email confirmation link has expired. Please sign in if you've already confirmed your email, or sign up again to receive a new confirmation link."
+        },
+        "linkAlreadyUsed": {
+          "title": "Link Already Used",
+          "description": "This confirmation link has already been used. Your email is already confirmed. Please sign in to continue."
+        },
+        "confirmationError": {
+          "title": "Confirmation Error",
+          "description": "There was an issue confirming your email. Please sign in if you've already confirmed, or try signing up again."
+        },
+        "noCode": {
+          "title": "Ready to Sign In",
+          "description": "Your email is already confirmed. Please sign in using the email and password you created during sign up."
+        }
+      }
     }
   }
 }

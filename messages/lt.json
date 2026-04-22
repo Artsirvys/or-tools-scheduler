@@ -42,7 +42,7 @@
       },
       "step2": {
         "title": "Konfigūruoti komandos detales",
-        "description": "Nustatykite pagrindinę informaciją, įskaitant komandos pavadinimą, skyrių ir reikalingų darbuotojų skaičių per pamainą."
+        "description": "Nustatykite pagrindinę informaciją, pvz., komandos pavadinimą ir neprivalomą aprašymą."
       },
       "step3": {
         "title": "Apibrėžti pamainas",
@@ -123,6 +123,338 @@
     },
     "footer": {
       "copyright": "Visos teisės saugomos."
+    }
+  },
+  "participant": {
+    "dashboard": {
+      "loading": "Ikeliamas skydelis...",
+      "hello": "Sveiki",
+      "participant": "Dalyvis",
+      "overviewSubtitle": "Cia yra jusu pamainu apzvalga",
+      "supportProject": "Palaikykite projekta",
+      "sendFeedback": "Siusti atsiliepima",
+      "logOut": "Atsijungti",
+      "setAvailability": "Nustatyti mano prieinamuma",
+      "setAvailabilityDesc": "Pazymekite, kada galite dirbti",
+      "requestShiftChange": "Prasyti pamainos pakeitimo",
+      "requestShiftChangeDesc": "Keisti arba sukeisti pamainas",
+      "viewSchedule": "Perziureti grafika",
+      "viewScheduleDesc": "Perziurekite jums priskirtas pamainas",
+      "tabs": {
+        "overview": "Mano apzvalga",
+        "team": "Mano komanda"
+      },
+      "nextShifts": "Artimiausios pamainos",
+      "loadingShifts": "Ikeliamos jusu pamainos...",
+      "noTeam": "Jus nepriskirtas jokiai komandai",
+      "noTeamDesc": "Susisiekite su administratoriumi, kad jus pridetu i komanda",
+      "noShifts": "Nera suplanuotu artejanciu pamainu",
+      "noShiftsDesc": "Cia matysite savo pamainas, kai jos bus jums priskirtos",
+      "status": {
+        "confirmed": "Patvirtinta",
+        "changeRequested": "Prasymas pakeisti"
+      },
+      "change": "Keisti",
+      "newNotifications": "Nauji pranesimai",
+      "noNotifications": "Nauju pranesimu nera",
+      "noNotificationsDesc": "Cia matysite pamainu keitimo prasymus, kai jie atsiras",
+      "accept": "Priimti",
+      "decline": "Atmesti",
+      "selectTeamToView": "Pasirinkite komanda perziurai",
+      "selectTeamToViewDesc": "Pasirinkite komanda, kad matytumete narius ir detales",
+      "notifications": {
+        "wantsToSwap": "nori sukeisti",
+        "on": "diena",
+        "withYour": "su jusu",
+        "unknownUser": "Nezinomas naudotojas",
+        "unknownShift": "Nezinoma pamaina",
+        "unknownTeam": "Nezinoma komanda",
+        "unknownTime": "Nezinomas laikas"
+      },
+      "time": {
+        "justNow": "Ka tik",
+        "oneHourAgo": "pries 1 val.",
+        "hoursAgo": "val. pries",
+        "oneDayAgo": "pries 1 d.",
+        "daysAgo": "d. pries"
+      },
+      "alerts": {
+        "openShiftChangeFailed": "Nepavyko atidaryti pamainos keitimo prasymo",
+        "userNotAuthenticated": "Naudotojas neautentifikuotas",
+        "processRequestFailed": "Nepavyko apdoroti prasymo",
+        "acceptedSuccess": "Pamainos keitimas priimtas! Jusu grafikas atnaujintas.",
+        "acceptFailed": "Nepavyko priimti prasymo",
+        "declineFailed": "Nepavyko atmesti prasymo",
+        "declinedSuccess": "Pamainos keitimo prasymas atmestas."
+      },
+      "donation": {
+        "title": "Palaikykite AISchedulator",
+        "line1": "Jei AISchedulator padeda jums ar jusu komandai, galite paremti tolesni kurima.",
+        "line2": "Kiekviena parama padeda palaikyti projekta ir kurti naujas funkcijas. <3"
+      },
+      "close": "Uzdaryti"
+    },
+    "availability": {
+      "title": "Nustatyti prieinamuma",
+      "backToDashboard": "Grizti i skydeli",
+      "loading": "Ikeliami prieinamumo nustatymai...",
+      "noTeamTitle": "Jus dar nepriskirtas jokiai komandai",
+      "noTeamDesc": "Susisiekite su administratoriumi, kad jus pridetu i komanda pries nustatant prieinamuma.",
+      "selectTeam": "Pasirinkti komanda",
+      "selectMonth": "Pasirinkti menesi",
+      "legendTitle": "Prieinamumo legenda",
+      "legendDesc": "Spauskite bet kuria datos/pamainos kombinacija, kad nustatytumete prieinamuma. Nepakeistos datos laikomos prieinamomis.",
+      "date": "Data",
+      "range": {
+        "trigger": "Intervalas",
+        "titleAll": "Visos pamainos (sis stulpelis)",
+        "titleShift": "Si pamainos stulpelis",
+        "hintAll": "Kiekvienas pamainos stulpelis gauna sia prieinamuma pasirinktoms dienoms (tik dienomis, kai pamaina galioja).",
+        "hintShift": "Atnaujinamos tik dienos, kai sia pamaina rodoma lenteleje (kaip spaudziant kiekviena langeli).",
+        "from": "Nuo",
+        "to": "Iki",
+        "statusLabel": "Prieinamumas",
+        "apply": "Taikyti intervalui",
+        "ariaAll": "Nustatyti prieinamuma datu intervalui visoms pamainoms",
+        "ariaShiftPrefix": "Nustatyti datu intervalui stulpeliui"
+      },
+      "copy": {
+        "trigger": "Kopijuoti is praejusio menesio",
+        "title": "Kopijuoti praejusi menesi",
+        "desc": "Ikelti issaugota prieinamuma is {prev} i {current}. Perrašo sutampancias dienas lenteleje (tik esamus pamainu tipus).",
+        "dayOfMonth": "Ta pati menesio diena",
+        "dayOfMonthHelp": "10-oji lieka 10-oji. Dienos, kuriu siame menesi nera, praleidžiamos (pvz. 31 ilgesniame menesyje).",
+        "weekday": "Ta pati savaites dienos vieta",
+        "weekdayHelp": "Pagal eilę menesyje (pvz. 2 antradienis → 2 antradienis). Praleidžiama, jei tokios nera.",
+        "cancel": "Atsaukti",
+        "apply": "Kopijuoti",
+        "applying": "Kopijuojama…",
+        "empty": "Praeitame menesyje issaugotos prieinamumo nera.",
+        "success": "Prieinamumas nukopijuotas. Peržiurekite ir issaugokite.",
+        "failed": "Nepavyko kopijuoti. Bandykite dar karta."
+      },
+      "dragFill": {
+        "lead": "Spauskite pamainos langeli ciklui. Pasirinkite spalva, laikykite (~0,2s) ar vilkite. Puslapi slinkite kairiaja datos stulpeliu.",
+        "brush": "Vilkite su"
+      },
+      "bulk": {
+        "title": "Greita: pazymeti kaip neprieinama",
+        "desc": "Taikoma rodomam menesiui. Keicamos tik langeliai, kurie matomi lenteleje.",
+        "weekends": "Visus savaitgalius – neprieinama",
+        "workdays": "Visas darbo dienas – neprieinama",
+        "shiftSection": "Pagal pamainos tipa",
+        "shiftHint": "Pasirinkite viena ar daugiau pamainu stulpeliu siai komandai.",
+        "noShifts": "Siai komandai pamainu nera.",
+        "selectAllShifts": "Pasirinkti visas",
+        "clearShifts": "Isvalyti",
+        "applyShifts": "Pasirinktas pamainas – neprieinama",
+        "weekdaySection": "Pagal savaites diena",
+        "weekdayHint": "Pasirinkite dienas; visi pamainu stulpeliai bus neprieinami tomis menesio dienomis.",
+        "selectAllDays": "Pasirinkti visas",
+        "clearDays": "Isvalyti",
+        "applyWeekdays": "Pasirinktas dienas – neprieinama"
+      },
+      "status": {
+        "available": "Galiu",
+        "availableDesc": "Galiu dirbti sia pamaina",
+        "priority": "Prioritetas",
+        "priorityDesc": "Noreciau dirbti sia pamaina",
+        "unavailable": "Negaliu",
+        "unavailableDesc": "Negaliu dirbti sios pamainos",
+        "vacation": "Atostogos",
+        "vacationDesc": "Atostogauju",
+        "conference": "Konferencija",
+        "conferenceDesc": "Konferencijoje",
+        "notSet": "Nenurodyta",
+        "notSetDesc": "Tiksliai be pirmenybes (po kitu busenu)"
+      },
+      "alerts": {
+        "saveFailed": "Nepavyko issaugoti prieinamumo",
+        "saveSuccess": "Prieinamumas sekmingai issaugotas!",
+        "draftSaved": "Prieinamumas issaugotas kaip juodrastis! Galite testi veliau."
+      },
+      "saveDraft": "Issaugoti juodrasti",
+      "saveAvailability": "Issaugoti prieinamuma",
+      "saving": "Saugoma..."
+    },
+    "shiftChange": {
+      "title": "Pamainu keitimo prasymai",
+      "backToDashboard": "Grizti i skydeli",
+      "loading": "Ikeliami pamainu keitimo duomenys...",
+      "requestTitle": "Prasyti pamainos pakeitimo",
+      "requestDesc": "Prasyti pakeisti viena is jums priskirtu pamainu su kitu komandos nariu",
+      "selectTeam": "Pasirinkti komanda",
+      "noTeams": "Nera komandu",
+      "currentShift": "Dabartine keiciama pamaina",
+      "currentShiftPlaceholder": "Pasirinkite savo keiciama pamaina",
+      "noShiftsForTeam": "Siai komandai nera artejanciu pamainu",
+      "selectTeamFirst": "Pirmiausia pasirinkite komanda",
+      "preferredDate": "Pageidaujama nauja data",
+      "pickDate": "Pasirinkite data",
+      "showAvailableDates": "Spauskite cia, kad pamatytumete galimas datas",
+      "howItWorks": "Kaip tai veikia",
+      "howItWorksDesc": "Pasirinkite data, kai dirba kitas komandos narys, ir pamainos tipa. Sistema ras nari su ta pamaina ir issius sukeitimo prasyma.",
+      "preferredShift": "Pageidaujama nauja pamaina",
+      "preferredShiftPlaceholder": "Pasirinkite pageidaujama pamainos laika",
+      "noShiftsAnyTeam": "Jusu komandoms nera pamainu",
+      "reasonOptional": "Priezastis (nebutina)",
+      "reasonPlaceholder": "Paaiskinkite, kodel jums reikia pakeisti sia pamaina...",
+      "sending": "Siunciama uzklausa...",
+      "sendRequest": "Siusti keitimo uzklausa",
+      "pendingTitle": "Laukiantys prasymai",
+      "pendingDesc": "Pamainu keitimo prasymai, kuriems reikia jusu atsakymo",
+      "myRequests": "Mano prasymai",
+      "myRequestsDesc": "Sekite savo pamainu keitimo prasymu busena",
+      "original": "Pradine",
+      "requested": "Prasoma",
+      "message": "Zinute",
+      "unknownShift": "Nezinoma pamaina",
+      "unknownTeam": "Nezinoma komanda",
+      "noPending": "Laukianciu prasymu nera",
+      "noRequestsYet": "Prasymu dar nera",
+      "accept": "Priimti",
+      "decline": "Atmesti",
+      "status": {
+        "pending": "Laukiama",
+        "approved": "Patvirtinta",
+        "rejected": "Atmesta"
+      },
+      "time": {
+        "justNow": "Ka tik",
+        "oneHourAgo": "pries 1 val.",
+        "hoursAgo": "val. pries",
+        "oneDayAgo": "pries 1 d.",
+        "daysAgo": "d. pries"
+      },
+      "confirm": {
+        "title": "Patvirtinkite pamainos keitimo prasyma",
+        "from": "Is",
+        "to": "I",
+        "team": "Komanda",
+        "on": "diena",
+        "reason": "Priezastis",
+        "footer": "Sistema ras komandos nari su prasoma pamaina ir issius jam sukeitimo prasyma. Ar testi?"
+      },
+      "alerts": {
+        "userNotAuthenticated": "Naudotojas neautentifikuotas. Prisijunkite is naujo.",
+        "selectTeamFirst": "Pirmiausia pasirinkite komanda.",
+        "selectCurrentShift": "Pasirinkite pamaina, kuria norite keisti.",
+        "selectPreferredDate": "Pasirinkite pageidaujama nauja data.",
+        "selectPreferredShift": "Pasirinkite pageidaujama naujos pamainos laika.",
+        "futureDateOnly": "Pasirinkite busima data pageidaujamai pamainai.",
+        "shiftDataMissing": "Nepavyko rasti pamainos duomenu. Bandykite dar karta.",
+        "noShiftsAvailable": "Nera galimu pamainu. Patikrinkite komandos priskyrimus.",
+        "selectedShiftNotFound": "Pasirinkta pamaina nerasta",
+        "availableDatesNext30": "Galimos datos per artimiausias 30 dienu",
+        "noScheduledShiftsNext30": "Jusu komandai per artimiausias 30 dienu nerasta suplanuotu pamainu.",
+        "noShiftsOnDatePrefix": "Jusu komandai sia data nera suplanuotu pamainu:",
+        "noShiftsOnDateBody": "Tai gali reiksti:\n\n1. Siai datai grafikas dar nesugeneruotas\n2. Ta diena nepriskirti komandos nariai\n3. Data nepatenka i dabartini planavimo laikotarpi\n\nSusisiekite su komandos vadovu, kad pamainos butu suplanuotos, arba pasirinkite kita data.",
+        "errorFindingTeamMembers": "Klaida ieskant komandos nariu",
+        "errorFindingAvailableShifts": "Klaida ieskant galimu pamainu",
+        "noAssignmentsOnDate": "Niekas is jusu komandos nera priskirtas pamainoms sia data:",
+        "noMatchingShiftPrefix": "Niekas is jusu komandos nera priskirtas",
+        "noMatchingShiftOn": "pamainai data",
+        "availableShiftsOnDate": "Galimos pamainos ta diena",
+        "pickDifferentShiftOrDate": "Pasirinkite kita pamainos tipa arba data.",
+        "noShiftDetails": "Nepavyko gauti pamainu detaliu galimiems priskyrimams. Gali buti duomenu prieigos problema.",
+        "createRequestFailed": "Nepavyko sukurti pamainos keitimo prasymo",
+        "requestSent": "Pamainos keitimo prasymas sekmingai issiustas!",
+        "submitFailed": "Nepavyko pateikti prasymo",
+        "processFailed": "Nepavyko apdoroti prasymo",
+        "acceptSuccess": "Pamainos keitimo prasymas priimtas, pamainos sekmingai sukeistos!",
+        "declineFailed": "Nepavyko atmesti prasymo",
+        "declineSuccess": "Prasymas sekmingai atmestas!"
+      }
+    },
+    "schedule": {
+      "title": "Mano komandos grafikas",
+      "backToDashboard": "Grizti i skydeli",
+      "loading": "Ikeliami grafiko duomenys...",
+      "teamScheduleFor": "Jusu komandos grafikas",
+      "members": "nariams",
+      "selectMonth": "Pasirinkti menesi",
+      "currentSchedule": "Dabartinis grafikas",
+      "currentScheduleDesc": "Sis grafikas sugeneruotas atsizvelgiant i visu prieinamuma ir pageidavimus",
+      "scheduleDetails": "Grafiko detales",
+      "details": {
+        "fair": "Teisingas pamainu paskirstymas",
+        "availability": "Pagal jusu prieinamuma",
+        "coverage": "Optimizuota komandos aprieptis"
+      },
+      "lastUpdated": "Paskutini karta atnaujinta",
+      "at": "val.",
+      "schedule": "grafikas",
+      "shiftTypes": "Pamainu tipai",
+      "shiftTypesDescA": "Si komanda turi",
+      "shiftTypesDescB": "pamainos tipa",
+      "shiftTypesDescC": "su skirtingu laiku priklausomai nuo savaites dienos.",
+      "shiftTypesDescD": "Kiekvienas stulpelis rodo sujungta pamainos tipa, kuris skirtingomis dienomis gali tureti kita laika.",
+      "date": "Data",
+      "you": "Jus",
+      "unassigned": "Nepriskirta",
+      "legend": "Grafiko legenda",
+      "legendYourShifts": "Jusu pamainos",
+      "legendTeamShifts": "Komandos nariu pamainos",
+      "teamSchedule": "Komandos grafikas",
+      "teamNotFoundDesc": "Komanda nerasta arba neturite prieigos prie sios komandos",
+      "exportPdf": "Eksportuoti PDF",
+      "accessDenied": "Prieiga uzdrausta",
+      "accessDeniedDesc": "Neturite prieigos prie sios komandos grafiko",
+      "teamNotFound": "Komanda nerasta",
+      "teamNotFoundLong": "Komanda, kurios ieskote, neegzistuoja arba neturite teises perziureti jos grafiko.",
+      "alerts": {
+        "exported": "Grafikas eksportuotas i PDF! Patikrinkite Downloads aplanka."
+      }
+    }
+  },
+  "hostTeamAvailability": {
+    "remindButton": "Priminti",
+    "remindSending": "Siunčiama…",
+    "remindNone": "Priminimų nereikia — visi jau įvedė bent vieną prieinamumą šiam mėnesiui.",
+    "remindSuccess": "Išsiųsta {count} priminimo laiškas (-ai).",
+    "remindNoShifts": "Prieš siųsdami priminimus, pridėkite bent vieną pamainos tipą.",
+    "remindPartial": "Problemos: {failed} nepavyko, {skipped} praleista (nėra el. pašto).",
+    "remindFailed": "Nepavyko išsiųsti priminimų. Bandykite dar kartą."
+  },
+  "auth": {
+    "signin": {
+      "title": "Sveiki sugrįžę",
+      "description": "Prisijunkite prie savo paskyros, kad tęstumėte",
+      "descriptionWithInvitation": "Prisijunkite, kad užbaigtumėte komandos pakvietimą",
+      "teamInvitation": "Komandos pakvietimas",
+      "joiningTeam": "Jūs prisijungiate prie",
+      "email": "El. paštas",
+      "password": "Slaptažodis",
+      "emailPlaceholder": "gydytojas@ligonine.lt",
+      "passwordPlaceholder": "Įveskite savo slaptažodį",
+      "signInButton": "Prisijungti",
+      "signingIn": "Prisijungiama...",
+      "forgotPassword": "Pamiršote slaptažodį?",
+      "noAccount": "Neturite paskyros?",
+      "signUpLink": "Registruotis",
+      "loading": "Įkeliama prisijungimas...",
+      "messages": {
+        "emailConfirmed": {
+          "title": "El. paštas sėkmingai patvirtintas!",
+          "description": "Jūsų el. paštas buvo patvirtintas. Prašome prisijungti, kad tęstumėte."
+        },
+        "linkExpired": {
+          "title": "Patvirtinimo nuoroda pasibaigė",
+          "description": "El. pašto patvirtinimo nuoroda pasibaigė. Prašome prisijungti, jei jūs jau patvirtinote savo el. paštą, arba užsiregistruokite dar kartą, kad gautumėte naują patvirtinimo nuorodą."
+        },
+        "linkAlreadyUsed": {
+          "title": "Nuoroda jau naudota",
+          "description": "Ši patvirtinimo nuoroda jau buvo naudota. Jūsų el. paštas jau patvirtintas. Prašome prisijungti, kad tęstumėte."
+        },
+        "confirmationError": {
+          "title": "Patvirtinimo klaida",
+          "description": "Kilo problema patvirtinant jūsų el. paštą. Prašome prisijungti, jei jūs jau patvirtinote, arba bandykite užsiregistruoti dar kartą."
+        },
+        "noCode": {
+          "title": "Pasiruošę prisijungti",
+          "description": "Jūsų el. paštas jau patvirtintas. Prisijunkite naudodami el. paštą ir slaptažodį, kuriuos sukūrėte registracijos metu."
+        }
+      }
     }
   }
 }

@@ -210,6 +210,17 @@ When you see phrases like "monthly [shift name] shift limit = X" or "limited to 
 - shift_name: [exact shift name from database]
 - max_shifts: X (the limit number)
 
+**VACATION-ADJUSTED MONTHLY CAP (TOTAL SHIFTS):**
+When you see constraints about reducing EACH PARTICIPANT'S total monthly shift cap based on vacation day count, use:
+- constraint_type: "vacation_adjusted_monthly_cap"
+- This is a team-wide rule (do not include member_id)
+- Count vacation days from availability entries where status is "vacation"
+- Use upper-bound tiers with percentage reduction
+- Default tiers:
+  - up to 9 vacation days => 25% reduction
+  - up to 16 vacation days => 50% reduction
+  - up to 28 vacation days => 75% reduction
+
 Example: "Team member 'John': monthly Night Shift limit = 1" should become:
 {
   "constraint_type": "member_monthly_shift_limit",
@@ -218,6 +229,20 @@ Example: "Team member 'John': monthly Night Shift limit = 1" should become:
     "member_name": "John",
     "shift_name": "Night Shift",
     "max_shifts": 1
+  }
+}
+
+Example: "If participant has up to 9 vacation days, reduce max days/month by 25%; up to 16 by 50%; up to 28 by 75%" should become:
+{
+  "constraint_type": "vacation_adjusted_monthly_cap",
+  "parameters": {
+    "count_status": "vacation",
+    "apply_if_vacation_days_at_least": 1,
+    "tiers": [
+      { "max_vacation_days": 9, "reduction_percent": 25 },
+      { "max_vacation_days": 16, "reduction_percent": 50 },
+      { "max_vacation_days": 28, "reduction_percent": 75 }
+    ]
   }
 }
 
@@ -238,7 +263,7 @@ Return ONLY valid JSON with these EXACT fields. Do not include any text before o
 {
 
 {
-  "constraint_type": "one of: consecutive_shift_restriction, shift_transition_restriction, workers_per_shift, max_consecutive_days, shift_preference, shift_rotation, workload_distribution, shift_specific_rule, member_shift_restriction, member_monthly_shift_limit",
+  "constraint_type": "one of: consecutive_shift_restriction, shift_transition_restriction, workers_per_shift, max_consecutive_days, shift_preference, shift_rotation, workload_distribution, shift_specific_rule, member_shift_restriction, member_monthly_shift_limit, vacation_adjusted_monthly_cap",
   "parameters": {
     // For consecutive_shift_restriction:
     "shift_identifiers": {
@@ -297,6 +322,15 @@ Return ONLY valid JSON with these EXACT fields. Do not include any text before o
     "member_name": "John Doe", // Member's name
     "shift_name": "Night Shift", // Exact shift name from database
     "max_shifts": 1 // Maximum number of this shift type per month
+
+    // For vacation_adjusted_monthly_cap (team-wide total monthly cap adjustment):
+    "count_status": "vacation", // availability status used to count vacation days
+    "apply_if_vacation_days_at_least": 1, // apply only when member has at least this many vacation days
+    "tiers": [
+      { "max_vacation_days": 9, "reduction_percent": 25 },
+      { "max_vacation_days": 16, "reduction_percent": 50 },
+      { "max_vacation_days": 28, "reduction_percent": 75 }
+    ]
   },
      "description": "Human-readable description of the constraint",
    "priority": "high|medium|low",
@@ -325,6 +359,7 @@ Return ONLY valid JSON with these EXACT fields. Do not include any text before o
 - Human: "John prefers day shifts" → constraint_type: "member_shift_restriction" with member_id: "550e8400-e29b-41d4-a716-446655440001", member_name: "John", restriction_type: "preferred"
 - Human: "Need 3 people on busy shifts" → constraint_type: "workers_per_shift" with specific busy shift IDs
 - Human: "Prefer day shifts over night shifts" → constraint_type: "shift_preference" with specific day/night shift IDs
+- Human: "Vacation-adjusted monthly cap: up to 9 vacation days => -25%; up to 16 => -50%; up to 28 => -75%" → constraint_type: "vacation_adjusted_monthly_cap" with the tier structure shown above
 
 **CRITICAL SEMANTIC LOGIC FOR max_consecutive:**
 The max_consecutive value represents the MAXIMUM number of consecutive shifts ALLOWED.
@@ -344,6 +379,7 @@ The max_consecutive value represents the MAXIMUM number of consecutive shifts AL
 **IMPORTANT**: For shift_transition_restriction, use forbidden_transitions with exact shift IDs from the database.
 **IMPORTANT**: For member constraints, use member_shift_restriction and include member_id/member_name.
 **IMPORTANT**: When a member name is mentioned (e.g., "Erika", "John"), find their actual user ID from the team members data and use that as member_id. Use the name as member_name for display.
+**IMPORTANT**: For team-wide vacation-based reduction of max monthly shifts, use vacation_adjusted_monthly_cap (not member_monthly_shift_limit).
 **CRITICAL**: member_id must be the actual UUID from users.id, NEVER use the person's name as the ID.
 **CRITICAL**: Use shift IDs (applies_to_shifts) as the primary method for identifying shifts, with exact names as fallback.
 **CRITICAL**: For "A after B" patterns, use shift_transition_restriction, not consecutive_shift_restriction.`

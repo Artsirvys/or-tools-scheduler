@@ -36,6 +36,7 @@ type Availability = {
   shift_id: string;
   date: string;
   status: string;
+  original_status?: string;
 };
 
 type BasicConstraints = {
@@ -44,6 +45,28 @@ type BasicConstraints = {
   workers_per_shift: number;
   shift_specific_workers?: Record<string, unknown>;
 };
+
+/** Statuses that block assignment (same semantics as unavailable for scheduling). */
+function isBlockingAvailabilityStatus(status: string): boolean {
+  return (
+    status === "unavailable" ||
+    status === "vacation" ||
+    status === "conference"
+  );
+}
+
+/**
+ * Normalizes availability statuses for the external solver.
+ * The solver only guarantees "unavailable" as a blocking status, so map
+ * extended blocking statuses to unavailable before solving.
+ */
+function normalizeAvailabilityForSolver(entry: Availability): Availability {
+  if (isBlockingAvailabilityStatus(entry.status)) {
+    return { ...entry, original_status: entry.status, status: "unavailable" };
+  }
+
+  return entry;
+}
 
 type CustomConstraint = {
   raw_text: string;
@@ -86,7 +109,10 @@ function generateBasicSchedule(
         );
         
         // Only assign if available or no availability set (treat as available)
-        if (!availabilityEntry || availabilityEntry.status !== 'unavailable') {
+        if (
+          !availabilityEntry ||
+          !isBlockingAvailabilityStatus(availabilityEntry.status)
+        ) {
           assignments.push({
             user_id: member.id,
             shift_id: shift.id,
@@ -252,6 +278,8 @@ export async function POST(req: Request) {
 
     console.log("Fetched custom constraints:", customConstraints);
 
+    const normalizedAvailability = (availability || []).map(normalizeAvailabilityForSolver);
+
     // 6. Prepare data for OR-Tools solver
     const solverData = {
       team_id: teamId,
@@ -259,7 +287,7 @@ export async function POST(req: Request) {
       year: year,
       shifts: typedShifts,
       members: members,
-      availability: availability || [],
+      availability: normalizedAvailability,
       basic_constraints: basicConstraints || {
         max_consecutive_days: 30,
         max_days_per_month: 20,
@@ -274,7 +302,7 @@ export async function POST(req: Request) {
       year,
       shiftsCount: typedShifts.length,
       membersCount: members.length,
-      availabilityCount: availability?.length || 0,
+      availabilityCount: normalizedAvailability.length,
       hasBasicConstraints: !!basicConstraints,
       customConstraintsCount: customConstraints?.length || 0,
     });
@@ -332,7 +360,14 @@ export async function POST(req: Request) {
     } else {
       // Fallback: Generate basic schedule without Python solver
       console.log("Generating basic schedule without Python solver...");
-      assignments = generateBasicSchedule(members, typedShifts, availability, basicConstraints, month, year);
+      assignments = generateBasicSchedule(
+        members,
+        typedShifts,
+        normalizedAvailability,
+        basicConstraints,
+        month,
+        year
+      );
     }
 
     console.log("Final assignments:", assignments);

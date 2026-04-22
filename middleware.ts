@@ -6,6 +6,17 @@ import type { NextRequest } from 'next/server'
 
 const intlMiddleware = createMiddleware(routing)
 
+const protectedPrefixes = [
+  '/dashboard',
+  '/participant',
+  '/teams',
+  '/schedule',
+  '/billing',
+  '/checkout',
+  '/subscribe',
+  '/success',
+]
+
 export async function middleware(req: NextRequest) {
   // First, handle i18n routing
   const response = intlMiddleware(req)
@@ -35,15 +46,17 @@ export async function middleware(req: NextRequest) {
     }
   )
 
-  const { data: { session } } = await supabase.auth.getSession()
+  const isProtectedPath = protectedPrefixes.some((prefix) =>
+    pathnameWithoutLocale === prefix || pathnameWithoutLocale.startsWith(`${prefix}/`)
+  )
 
-  // Protect dashboard routes
-  if (pathnameWithoutLocale.startsWith('/dashboard') || 
-      pathnameWithoutLocale.startsWith('/participant')) {
-    if (!session) {
-      const signInPath = `/${locale}/auth/signin`
-      return NextResponse.redirect(new URL(signInPath, req.url))
-    }
+  const {
+    data: { user },
+  } = isProtectedPath ? await supabase.auth.getUser() : { data: { user: null } }
+
+  if (isProtectedPath && !user) {
+    const signInPath = `/${locale}/auth/signin`
+    return NextResponse.redirect(new URL(signInPath, req.url))
   }
 
   return response

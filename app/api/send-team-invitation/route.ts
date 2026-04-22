@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
+import { routing } from '@/i18n/routing'
 
 export async function POST(request: NextRequest) {
   console.log('send-team-invitation API called')
@@ -39,8 +40,9 @@ export async function POST(request: NextRequest) {
     })
 
     // Build a redirect URL for after the invite is accepted
+    // Use default locale for invitations (user can switch language after signing in)
     const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://www.aischedulator.com'
-    const redirectTo = `${appUrl}/auth/signin?team=${teamId}&email=${encodeURIComponent(email)}`
+    const redirectTo = `${appUrl}/${routing.defaultLocale}/auth/signin?team=${teamId}&email=${encodeURIComponent(email)}`
 
     // Try Supabase Admin invite; if it fails, surface the error to help configuration
     console.log('Attempting Supabase admin invitation for:', email)

@@ -18,7 +18,7 @@ export default async function LocaleLayout({
   const { locale } = await params
   
   // Ensure that the incoming `locale` is valid
-  if (!routing.locales.includes(locale as any)) {
+  if (!routing.locales.includes(locale as typeof routing.locales[number])) {
     notFound()
   }
 
@@ -32,7 +32,9 @@ export default async function LocaleLayout({
   return (
     <NextIntlClientProvider messages={messages}>
       <SupabaseProvider>
-        {children}
+        <div className="w-full max-w-full overflow-x-hidden md:overflow-x-visible">
+          {children}
+        </div>
       </SupabaseProvider>
     </NextIntlClientProvider>
   )

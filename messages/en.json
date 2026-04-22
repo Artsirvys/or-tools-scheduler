@@ -42,7 +42,7 @@
       },
       "step2": {
         "title": "Configure Team Details",
-        "description": "Set up basic information including team name, department, and workers required per shift."
+        "description": "Set up basic information such as team name and an optional description."
       },
       "step3": {
         "title": "Define Shifts",
@@ -123,6 +123,338 @@
     },
     "footer": {
       "copyright": "All rights reserved."
+    }
+  },
+  "participant": {
+    "dashboard": {
+      "loading": "Loading dashboard...",
+      "hello": "Hello",
+      "participant": "Participant",
+      "overviewSubtitle": "Here is your shift overview",
+      "supportProject": "Support a project",
+      "sendFeedback": "Send Feedback",
+      "logOut": "Log out",
+      "setAvailability": "Set My Availability",
+      "setAvailabilityDesc": "Mark when you can work",
+      "requestShiftChange": "Request Shift Change",
+      "requestShiftChangeDesc": "Swap or change shifts",
+      "viewSchedule": "View Schedule",
+      "viewScheduleDesc": "See your assigned shifts",
+      "tabs": {
+        "overview": "My Overview",
+        "team": "My Team"
+      },
+      "nextShifts": "My Next Shifts",
+      "loadingShifts": "Loading your shifts...",
+      "noTeam": "You are not assigned to a team",
+      "noTeamDesc": "Contact your administrator to be added to a team",
+      "noShifts": "No upcoming shifts scheduled",
+      "noShiftsDesc": "Here you will see your shifts when they are assigned to you",
+      "status": {
+        "confirmed": "Confirmed",
+        "changeRequested": "Change Requested"
+      },
+      "change": "Change",
+      "newNotifications": "New Notifications",
+      "noNotifications": "No new notifications",
+      "noNotificationsDesc": "You'll see shift change requests here when they come in",
+      "accept": "Accept",
+      "decline": "Decline",
+      "selectTeamToView": "Select Team to View",
+      "selectTeamToViewDesc": "Choose a team to see its members and details",
+      "notifications": {
+        "wantsToSwap": "wants to swap",
+        "on": "on",
+        "withYour": "with your",
+        "unknownUser": "Unknown User",
+        "unknownShift": "Unknown Shift",
+        "unknownTeam": "Unknown Team",
+        "unknownTime": "Unknown Time"
+      },
+      "time": {
+        "justNow": "Just now",
+        "oneHourAgo": "1 hour ago",
+        "hoursAgo": "hours ago",
+        "oneDayAgo": "1 day ago",
+        "daysAgo": "days ago"
+      },
+      "alerts": {
+        "openShiftChangeFailed": "Failed to open shift change request",
+        "userNotAuthenticated": "User not authenticated",
+        "processRequestFailed": "Failed to process request",
+        "acceptedSuccess": "Shift change accepted! Your schedule has been updated.",
+        "acceptFailed": "Failed to accept request",
+        "declineFailed": "Failed to decline request",
+        "declinedSuccess": "Shift change request declined."
+      },
+      "donation": {
+        "title": "Support AISchedulator",
+        "line1": "If AISchedulator helps you or your team, you can support the development.",
+        "line2": "Every donation helps keep the project alive and fund new features. ❤️"
+      },
+      "close": "Close"
+    },
+    "availability": {
+      "title": "Set Availability",
+      "backToDashboard": "Back to Dashboard",
+      "loading": "Loading your availability settings...",
+      "noTeamTitle": "You are not assigned to any team yet",
+      "noTeamDesc": "Please contact your administrator to be added to a team before setting availability.",
+      "selectTeam": "Select Team",
+      "selectMonth": "Select Month",
+      "legendTitle": "Availability Legend",
+      "legendDesc": "Click on any date/shift combination to set your availability. Dates you have not edited yet count as available.",
+      "date": "Date",
+      "range": {
+        "trigger": "Range",
+        "titleAll": "All shifts (this column)",
+        "titleShift": "This shift column",
+        "hintAll": "Every shift column gets this availability for days in the range (only on days where that shift applies).",
+        "hintShift": "Only days where this shift appears in the grid are updated (same as tapping each cell).",
+        "from": "From",
+        "to": "To",
+        "statusLabel": "Availability",
+        "apply": "Apply to range",
+        "ariaAll": "Set availability for a date range for all shifts",
+        "ariaShiftPrefix": "Set date range for column"
+      },
+      "copy": {
+        "trigger": "Copy from previous month",
+        "title": "Copy previous month",
+        "desc": "Load saved availability from {prev} into {current}. Overwrites overlapping dates in the grid for shift types that still exist.",
+        "dayOfMonth": "Same day of month",
+        "dayOfMonthHelp": "The 10th maps to the 10th. Days that do not exist in this month are skipped (e.g. 31st in a 30-day month).",
+        "weekday": "Same weekday position",
+        "weekdayHelp": "Matches by weekday order in the month (e.g. 2nd Tuesday → 2nd Tuesday). Skipped if that occurrence does not exist.",
+        "cancel": "Cancel",
+        "apply": "Copy",
+        "applying": "Copying…",
+        "empty": "No saved availability found for last month.",
+        "success": "Availability copied from last month. Review and save when ready.",
+        "failed": "Could not copy availability. Please try again."
+      },
+      "dragFill": {
+        "lead": "Tap a shift cell to cycle. Pick a brush below, then hold (~0.2s) or drag to paint. Scroll the page using the date column on the left.",
+        "brush": "Drag fills with"
+      },
+      "bulk": {
+        "title": "Quick: mark unavailable",
+        "desc": "Applies to the month shown below. Only cells that appear in the grid are updated.",
+        "weekends": "Mark all weekends unavailable",
+        "workdays": "Mark all workdays unavailable",
+        "shiftSection": "By shift type",
+        "shiftHint": "Select one or more shift columns for this team.",
+        "noShifts": "No shifts for this team.",
+        "selectAllShifts": "Select all",
+        "clearShifts": "Clear",
+        "applyShifts": "Mark selected shifts unavailable",
+        "weekdaySection": "By day of the week",
+        "weekdayHint": "Select days; every shift column is set unavailable on those days in this month.",
+        "selectAllDays": "Select all",
+        "clearDays": "Clear",
+        "applyWeekdays": "Mark selected days unavailable"
+      },
+      "status": {
+        "available": "Available",
+        "availableDesc": "I can work this shift",
+        "priority": "Priority",
+        "priorityDesc": "I prefer to work this shift",
+        "unavailable": "Unavailable",
+        "unavailableDesc": "I cannot work this shift",
+        "vacation": "Vacation",
+        "vacationDesc": "On vacation",
+        "conference": "Conference",
+        "conferenceDesc": "At conference",
+        "notSet": "Not Set",
+        "notSetDesc": "Explicit no preference after cycling past other states"
+      },
+      "alerts": {
+        "saveFailed": "Failed to save availability",
+        "saveSuccess": "Availability saved successfully!",
+        "draftSaved": "Availability saved as draft! You can continue editing later."
+      },
+      "saveDraft": "Save as Draft",
+      "saveAvailability": "Save Availability",
+      "saving": "Saving..."
+    },
+    "shiftChange": {
+      "title": "Shift Change Requests",
+      "backToDashboard": "Back to Dashboard",
+      "loading": "Loading shift change data...",
+      "requestTitle": "Request Shift Change",
+      "requestDesc": "Request to change one of your assigned shifts with another team member",
+      "selectTeam": "Select Team",
+      "noTeams": "No teams available",
+      "currentShift": "Current Shift to Change",
+      "currentShiftPlaceholder": "Select your shift to change",
+      "noShiftsForTeam": "No upcoming shifts available for this team",
+      "selectTeamFirst": "Please select a team first",
+      "preferredDate": "Preferred New Date",
+      "pickDate": "Pick a date",
+      "showAvailableDates": "Click here to see available dates",
+      "howItWorks": "How it works",
+      "howItWorksDesc": "Select a date when someone else in your team is working, and choose the shift type you want. The system will find a team member with that shift and send them a swap request.",
+      "preferredShift": "Preferred New Shift",
+      "preferredShiftPlaceholder": "Select preferred shift time",
+      "noShiftsAnyTeam": "No shifts available for your teams",
+      "reasonOptional": "Reason for Change (Optional)",
+      "reasonPlaceholder": "Explain why you need to change this shift...",
+      "sending": "Sending Request...",
+      "sendRequest": "Send Change Request",
+      "pendingTitle": "Pending Requests",
+      "pendingDesc": "Shift change requests that need your response",
+      "myRequests": "My Requests",
+      "myRequestsDesc": "Track the status of your shift change requests",
+      "original": "Original",
+      "requested": "Requested",
+      "message": "Message",
+      "unknownShift": "Unknown Shift",
+      "unknownTeam": "Unknown Team",
+      "noPending": "No pending requests",
+      "noRequestsYet": "No requests yet",
+      "accept": "Accept",
+      "decline": "Decline",
+      "status": {
+        "pending": "Pending",
+        "approved": "Approved",
+        "rejected": "Rejected"
+      },
+      "time": {
+        "justNow": "Just now",
+        "oneHourAgo": "1 hour ago",
+        "hoursAgo": "hours ago",
+        "oneDayAgo": "1 day ago",
+        "daysAgo": "days ago"
+      },
+      "confirm": {
+        "title": "Please confirm your shift change request",
+        "from": "From",
+        "to": "To",
+        "team": "Team",
+        "on": "on",
+        "reason": "Reason",
+        "footer": "The system will find a team member with the requested shift and send them a swap request. Do you want to proceed?"
+      },
+      "alerts": {
+        "userNotAuthenticated": "User not authenticated. Please log in again.",
+        "selectTeamFirst": "Please select a team first.",
+        "selectCurrentShift": "Please select the shift you want to change.",
+        "selectPreferredDate": "Please select your preferred new date.",
+        "selectPreferredShift": "Please select your preferred new shift time.",
+        "futureDateOnly": "Please select a future date for your preferred shift.",
+        "shiftDataMissing": "Shift data not found. Please try again.",
+        "noShiftsAvailable": "No shifts available. Please check your team assignments.",
+        "selectedShiftNotFound": "Selected shift not found",
+        "availableDatesNext30": "Available dates in the next 30 days",
+        "noScheduledShiftsNext30": "No scheduled shifts found for your team in the next 30 days.",
+        "noShiftsOnDatePrefix": "No shifts are currently scheduled for your team on",
+        "noShiftsOnDateBody": "This could mean:\n\n1. The schedule hasn't been generated for this date yet\n2. No team members are assigned to work on this date\n3. The date is outside the current schedule period\n\nPlease contact your team host to schedule shifts for this date, or choose a different date.",
+        "errorFindingTeamMembers": "Error finding team members",
+        "errorFindingAvailableShifts": "Error finding available shifts",
+        "noAssignmentsOnDate": "No one in your team is assigned to any shifts on",
+        "noMatchingShiftPrefix": "No one in your team is assigned to a",
+        "noMatchingShiftOn": "shift on",
+        "availableShiftsOnDate": "Available shifts on that date",
+        "pickDifferentShiftOrDate": "Please select a different shift type or date.",
+        "noShiftDetails": "No shift details could be retrieved for the available assignments. This might be a data access issue.",
+        "createRequestFailed": "Failed to create shift change request",
+        "requestSent": "Shift change request sent successfully!",
+        "submitFailed": "Failed to submit request",
+        "processFailed": "Failed to process request",
+        "acceptSuccess": "Shift change request accepted and shifts swapped successfully!",
+        "declineFailed": "Failed to decline request",
+        "declineSuccess": "Request declined successfully!"
+      }
+    },
+    "schedule": {
+      "title": "My Team Schedule",
+      "backToDashboard": "Back to Dashboard",
+      "loading": "Loading schedule data...",
+      "teamScheduleFor": "Your team schedule for",
+      "members": "members",
+      "selectMonth": "Select Month",
+      "currentSchedule": "Current Schedule",
+      "currentScheduleDesc": "This schedule was generated considering everyone's availability and preferences",
+      "scheduleDetails": "Schedule Details",
+      "details": {
+        "fair": "Fair distribution of shifts",
+        "availability": "Based on your availability",
+        "coverage": "Optimized for team coverage"
+      },
+      "lastUpdated": "Last Updated",
+      "at": "at",
+      "schedule": "Schedule",
+      "shiftTypes": "Shift Types",
+      "shiftTypesDescA": "This team has",
+      "shiftTypesDescB": "shift type",
+      "shiftTypesDescC": "with varying hours depending on the day of the week.",
+      "shiftTypesDescD": "Each column represents a consolidated shift type that may have different time ranges for different days.",
+      "date": "Date",
+      "you": "You",
+      "unassigned": "Unassigned",
+      "legend": "Schedule Legend",
+      "legendYourShifts": "Your Shifts",
+      "legendTeamShifts": "Team Member Shifts",
+      "teamSchedule": "Team Schedule",
+      "teamNotFoundDesc": "Team not found or you don't have access to this team",
+      "exportPdf": "Export PDF",
+      "accessDenied": "Access Denied",
+      "accessDeniedDesc": "You don't have access to this team's schedule",
+      "teamNotFound": "Team Not Found",
+      "teamNotFoundLong": "The team you're looking for doesn't exist or you don't have permission to view its schedule.",
+      "alerts": {
+        "exported": "Schedule exported to PDF! Please check your Downloads folder."
+      }
+    }
+  },
+  "hostTeamAvailability": {
+    "remindButton": "Remind missing",
+    "remindSending": "Sending…",
+    "remindNone": "No reminders sent — everyone who needs to submit has entered at least one availability for this month.",
+    "remindSuccess": "Sent {count} reminder email(s).",
+    "remindNoShifts": "Add at least one shift type to this team before sending reminders.",
+    "remindPartial": "Some issues: {failed} failed, {skipped} skipped (no email on file).",
+    "remindFailed": "Could not send reminders. Please try again."
+  },
+  "auth": {
+    "signin": {
+      "title": "Welcome back",
+      "description": "Sign in to your account to continue",
+      "descriptionWithInvitation": "Sign in to complete your team invitation",
+      "teamInvitation": "Team Invitation",
+      "joiningTeam": "You're joining",
+      "email": "Email",
+      "password": "Password",
+      "emailPlaceholder": "doctor@hospital.com",
+      "passwordPlaceholder": "Enter your password",
+      "signInButton": "Sign In",
+      "signingIn": "Signing in...",
+      "forgotPassword": "Forgot your password?",
+      "noAccount": "Don't have an account?",
+      "signUpLink": "Sign up",
+      "loading": "Loading sign in...",
+      "messages": {
+        "emailConfirmed": {
+          "title": "Email Successfully Confirmed!",
+          "description": "Your email has been confirmed. Please sign in to continue."
+        },
+        "linkExpired": {
+          "title": "Confirmation Link Expired",
+          "description": "The email confirmation link has expired. Please sign in if you've already confirmed your email, or sign up again to receive a new confirmation link."
+        },
+        "linkAlreadyUsed": {
+          "title": "Link Already Used",
+          "description": "This confirmation link has already been used. Your email is already confirmed. Please sign in to continue."
+        },
+        "confirmationError": {
+          "title": "Confirmation Error",
+          "description": "There was an issue confirming your email. Please sign in if you've already confirmed, or try signing up again."
+        },
+        "noCode": {
+          "title": "Ready to Sign In",
+          "description": "Your email is already confirmed. Please sign in using the email and password you created during sign up."
+        }
+      }
     }
   }
 }

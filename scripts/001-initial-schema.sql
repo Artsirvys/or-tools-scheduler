@@ -81,7 +81,7 @@ CREATE TABLE IF NOT EXISTS availability (
     team_id UUID NOT NULL REFERENCES teams(id) ON DELETE CASCADE,
     shift_id UUID NOT NULL REFERENCES shifts(id) ON DELETE CASCADE,
     date DATE NOT NULL,
-    status VARCHAR(20) NOT NULL CHECK (status IN ('available', 'unavailable', 'priority')),
+    status VARCHAR(20) NOT NULL CHECK (status IN ('available', 'unavailable', 'priority', 'vacation', 'conference')),
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
     UNIQUE(user_id, team_id, shift_id, date)

@@ -42,7 +42,7 @@
       },
       "step2": {
         "title": "Configura i dettagli del team",
-        "description": "Configura le informazioni di base inclusi nome del team, dipartimento e lavoratori richiesti per turno."
+        "description": "Configura le informazioni di base, ad esempio nome del team e descrizione facoltativa."
       },
       "step3": {
         "title": "Definisci i turni",
@@ -123,6 +123,338 @@
     },
     "footer": {
       "copyright": "Tutti i diritti riservati."
+    }
+  },
+  "participant": {
+    "dashboard": {
+      "loading": "Caricamento dashboard...",
+      "hello": "Ciao",
+      "participant": "Partecipante",
+      "overviewSubtitle": "Ecco la panoramica dei tuoi turni",
+      "supportProject": "Supporta il progetto",
+      "sendFeedback": "Invia feedback",
+      "logOut": "Esci",
+      "setAvailability": "Imposta la mia disponibilita",
+      "setAvailabilityDesc": "Indica quando puoi lavorare",
+      "requestShiftChange": "Richiedi cambio turno",
+      "requestShiftChangeDesc": "Scambia o modifica i turni",
+      "viewSchedule": "Visualizza pianificazione",
+      "viewScheduleDesc": "Guarda i turni a te assegnati",
+      "tabs": {
+        "overview": "La mia panoramica",
+        "team": "Il mio team"
+      },
+      "nextShifts": "I miei prossimi turni",
+      "loadingShifts": "Caricamento dei tuoi turni...",
+      "noTeam": "Non sei assegnato a nessun team",
+      "noTeamDesc": "Contatta l'amministratore per essere aggiunto a un team",
+      "noShifts": "Nessun turno imminente pianificato",
+      "noShiftsDesc": "Qui vedrai i tuoi turni quando ti verranno assegnati",
+      "status": {
+        "confirmed": "Confermato",
+        "changeRequested": "Cambio richiesto"
+      },
+      "change": "Cambia",
+      "newNotifications": "Nuove notifiche",
+      "noNotifications": "Nessuna nuova notifica",
+      "noNotificationsDesc": "Qui vedrai le richieste di cambio turno quando arrivano",
+      "accept": "Accetta",
+      "decline": "Rifiuta",
+      "selectTeamToView": "Seleziona team da visualizzare",
+      "selectTeamToViewDesc": "Scegli un team per vedere membri e dettagli",
+      "notifications": {
+        "wantsToSwap": "vuole scambiare",
+        "on": "il",
+        "withYour": "con il tuo",
+        "unknownUser": "Utente sconosciuto",
+        "unknownShift": "Turno sconosciuto",
+        "unknownTeam": "Team sconosciuto",
+        "unknownTime": "Orario sconosciuto"
+      },
+      "time": {
+        "justNow": "Proprio ora",
+        "oneHourAgo": "1 ora fa",
+        "hoursAgo": "ore fa",
+        "oneDayAgo": "1 giorno fa",
+        "daysAgo": "giorni fa"
+      },
+      "alerts": {
+        "openShiftChangeFailed": "Impossibile aprire la richiesta di cambio turno",
+        "userNotAuthenticated": "Utente non autenticato",
+        "processRequestFailed": "Impossibile elaborare la richiesta",
+        "acceptedSuccess": "Cambio turno accettato! Il tuo calendario e stato aggiornato.",
+        "acceptFailed": "Impossibile accettare la richiesta",
+        "declineFailed": "Impossibile rifiutare la richiesta",
+        "declinedSuccess": "Richiesta di cambio turno rifiutata."
+      },
+      "donation": {
+        "title": "Supporta AISchedulator",
+        "line1": "Se AISchedulator aiuta te o il tuo team, puoi supportare lo sviluppo.",
+        "line2": "Ogni donazione aiuta a mantenere vivo il progetto e finanziare nuove funzionalita. ❤️"
+      },
+      "close": "Chiudi"
+    },
+    "availability": {
+      "title": "Imposta disponibilita",
+      "backToDashboard": "Torna alla dashboard",
+      "loading": "Caricamento impostazioni di disponibilita...",
+      "noTeamTitle": "Non sei ancora assegnato a nessun team",
+      "noTeamDesc": "Contatta l'amministratore per essere aggiunto a un team prima di impostare la disponibilita.",
+      "selectTeam": "Seleziona team",
+      "selectMonth": "Seleziona mese",
+      "legendTitle": "Legenda disponibilita",
+      "legendDesc": "Fai clic su qualsiasi combinazione data/turno per impostare la disponibilita. Le date non modificate si intendono disponibili.",
+      "date": "Data",
+      "range": {
+        "trigger": "Intervallo",
+        "titleAll": "Tutti i turni (questa colonna)",
+        "titleShift": "Questa colonna turno",
+        "hintAll": "Ogni colonna turno riceve questa disponibilità per i giorni nell’intervallo (solo nei giorni in cui il turno è previsto).",
+        "hintShift": "Solo i giorni in cui questo turno compare nella tabella vengono aggiornati (come toccare ogni cella).",
+        "from": "Da",
+        "to": "A",
+        "statusLabel": "Disponibilità",
+        "apply": "Applica all’intervallo",
+        "ariaAll": "Imposta la disponibilità per un intervallo di date per tutti i turni",
+        "ariaShiftPrefix": "Imposta intervallo per la colonna"
+      },
+      "copy": {
+        "trigger": "Copia dal mese precedente",
+        "title": "Copia mese precedente",
+        "desc": "Carica la disponibilità salvata da {prev} in {current}. Sovrascrive le date sovrapposte nella tabella per i tipi di turno ancora presenti.",
+        "dayOfMonth": "Stesso giorno del mese",
+        "dayOfMonthHelp": "Il giorno 10 diventa il 10. I giorni assenti in questo mese vengono saltati (es. 31 in un mese da 30).",
+        "weekday": "Stessa posizione nel giorno della settimana",
+        "weekdayHelp": "Abbina per ordine nel mese (es. 2° martedì → 2° martedì). Saltato se non esiste.",
+        "cancel": "Annulla",
+        "apply": "Copia",
+        "applying": "Copia in corso…",
+        "empty": "Nessuna disponibilità salvata per il mese scorso.",
+        "success": "Disponibilità copiata dal mese precedente. Controlla e salva.",
+        "failed": "Impossibile copiare. Riprova."
+      },
+      "dragFill": {
+        "lead": "Tocca una cella turno per ciclare. Scegli il colore, tieni premuto (~0,2s) o trascina. Scorri la pagina dalla colonna date a sinistra.",
+        "brush": "Trascina con"
+      },
+      "bulk": {
+        "title": "Veloce: segna non disponibile",
+        "desc": "Si applica al mese mostrato sotto. Solo le celle presenti nella tabella vengono aggiornate.",
+        "weekends": "Segna tutti i fine settimana non disponibili",
+        "workdays": "Segna tutti i giorni feriali non disponibili",
+        "shiftSection": "Per tipo di turno",
+        "shiftHint": "Seleziona una o più colonne turno per questa squadra.",
+        "noShifts": "Nessun turno per questa squadra.",
+        "selectAllShifts": "Seleziona tutti",
+        "clearShifts": "Cancella",
+        "applyShifts": "Segna i turni selezionati come non disponibili",
+        "weekdaySection": "Per giorno della settimana",
+        "weekdayHint": "Seleziona i giorni; ogni colonna turno sarà non disponibile in quei giorni del mese.",
+        "selectAllDays": "Seleziona tutti",
+        "clearDays": "Cancella",
+        "applyWeekdays": "Segna i giorni selezionati come non disponibili"
+      },
+      "status": {
+        "available": "Disponibile",
+        "availableDesc": "Posso lavorare questo turno",
+        "priority": "Priorita",
+        "priorityDesc": "Preferisco lavorare questo turno",
+        "unavailable": "Non disponibile",
+        "unavailableDesc": "Non posso lavorare questo turno",
+        "vacation": "Ferie",
+        "vacationDesc": "In ferie",
+        "conference": "Conferenza",
+        "conferenceDesc": "A una conferenza",
+        "notSet": "Non impostato",
+        "notSetDesc": "Nessuna preferenza esplicita (dopo gli altri stati)"
+      },
+      "alerts": {
+        "saveFailed": "Impossibile salvare la disponibilita",
+        "saveSuccess": "Disponibilita salvata con successo!",
+        "draftSaved": "Disponibilita salvata come bozza! Puoi continuare a modificare piu tardi."
+      },
+      "saveDraft": "Salva come bozza",
+      "saveAvailability": "Salva disponibilita",
+      "saving": "Salvataggio..."
+    },
+    "shiftChange": {
+      "title": "Richieste di cambio turno",
+      "backToDashboard": "Torna alla dashboard",
+      "loading": "Caricamento dati cambio turno...",
+      "requestTitle": "Richiedi cambio turno",
+      "requestDesc": "Richiedi di cambiare uno dei tuoi turni assegnati con un altro membro del team",
+      "selectTeam": "Seleziona team",
+      "noTeams": "Nessun team disponibile",
+      "currentShift": "Turno attuale da cambiare",
+      "currentShiftPlaceholder": "Seleziona il turno da cambiare",
+      "noShiftsForTeam": "Nessun turno imminente disponibile per questo team",
+      "selectTeamFirst": "Seleziona prima un team",
+      "preferredDate": "Nuova data preferita",
+      "pickDate": "Scegli una data",
+      "showAvailableDates": "Fai clic qui per vedere le date disponibili",
+      "howItWorks": "Come funziona",
+      "howItWorksDesc": "Seleziona una data in cui un altro membro del tuo team sta lavorando e scegli il tipo di turno desiderato. Il sistema trovera un membro con quel turno e inviera una richiesta di scambio.",
+      "preferredShift": "Nuovo turno preferito",
+      "preferredShiftPlaceholder": "Seleziona l'orario di turno preferito",
+      "noShiftsAnyTeam": "Nessun turno disponibile per i tuoi team",
+      "reasonOptional": "Motivo del cambio (opzionale)",
+      "reasonPlaceholder": "Spiega perche hai bisogno di cambiare questo turno...",
+      "sending": "Invio richiesta...",
+      "sendRequest": "Invia richiesta di cambio",
+      "pendingTitle": "Richieste in sospeso",
+      "pendingDesc": "Richieste di cambio turno che richiedono la tua risposta",
+      "myRequests": "Le mie richieste",
+      "myRequestsDesc": "Tieni traccia dello stato delle tue richieste di cambio turno",
+      "original": "Originale",
+      "requested": "Richiesto",
+      "message": "Messaggio",
+      "unknownShift": "Turno sconosciuto",
+      "unknownTeam": "Team sconosciuto",
+      "noPending": "Nessuna richiesta in sospeso",
+      "noRequestsYet": "Nessuna richiesta ancora",
+      "accept": "Accetta",
+      "decline": "Rifiuta",
+      "status": {
+        "pending": "In sospeso",
+        "approved": "Approvato",
+        "rejected": "Rifiutato"
+      },
+      "time": {
+        "justNow": "Proprio ora",
+        "oneHourAgo": "1 ora fa",
+        "hoursAgo": "ore fa",
+        "oneDayAgo": "1 giorno fa",
+        "daysAgo": "giorni fa"
+      },
+      "confirm": {
+        "title": "Conferma la tua richiesta di cambio turno",
+        "from": "Da",
+        "to": "A",
+        "team": "Team",
+        "on": "il",
+        "reason": "Motivo",
+        "footer": "Il sistema trovera un membro del team con il turno richiesto e inviera una richiesta di scambio. Vuoi procedere?"
+      },
+      "alerts": {
+        "userNotAuthenticated": "Utente non autenticato. Accedi di nuovo.",
+        "selectTeamFirst": "Seleziona prima un team.",
+        "selectCurrentShift": "Seleziona il turno che vuoi cambiare.",
+        "selectPreferredDate": "Seleziona la nuova data preferita.",
+        "selectPreferredShift": "Seleziona il nuovo orario di turno preferito.",
+        "futureDateOnly": "Seleziona una data futura per il turno preferito.",
+        "shiftDataMissing": "Dati turno non trovati. Riprova.",
+        "noShiftsAvailable": "Nessun turno disponibile. Controlla le assegnazioni del team.",
+        "selectedShiftNotFound": "Turno selezionato non trovato",
+        "availableDatesNext30": "Date disponibili nei prossimi 30 giorni",
+        "noScheduledShiftsNext30": "Nessun turno pianificato trovato per il tuo team nei prossimi 30 giorni.",
+        "noShiftsOnDatePrefix": "Nessun turno e attualmente pianificato per il tuo team in data",
+        "noShiftsOnDateBody": "Questo puo significare:\n\n1. Il piano non e ancora stato generato per quella data\n2. Nessun membro del team e assegnato a lavorare quel giorno\n3. La data e fuori dal periodo di pianificazione corrente\n\nContatta l'host del team per pianificare turni in quella data, oppure scegli un'altra data.",
+        "errorFindingTeamMembers": "Errore durante la ricerca dei membri del team",
+        "errorFindingAvailableShifts": "Errore durante la ricerca dei turni disponibili",
+        "noAssignmentsOnDate": "Nessuno nel tuo team ha turni assegnati per la data:",
+        "noMatchingShiftPrefix": "Nessuno nel tuo team e assegnato a un",
+        "noMatchingShiftOn": "turno in data",
+        "availableShiftsOnDate": "Turni disponibili in quella data",
+        "pickDifferentShiftOrDate": "Seleziona un tipo di turno o una data diversa.",
+        "noShiftDetails": "Impossibile recuperare i dettagli turno per le assegnazioni disponibili. Potrebbe esserci un problema di accesso ai dati.",
+        "createRequestFailed": "Impossibile creare la richiesta di cambio turno",
+        "requestSent": "Richiesta di cambio turno inviata con successo!",
+        "submitFailed": "Impossibile inviare la richiesta",
+        "processFailed": "Impossibile elaborare la richiesta",
+        "acceptSuccess": "Richiesta di cambio turno accettata e turni scambiati con successo!",
+        "declineFailed": "Impossibile rifiutare la richiesta",
+        "declineSuccess": "Richiesta rifiutata con successo!"
+      }
+    },
+    "schedule": {
+      "title": "Pianificazione del mio team",
+      "backToDashboard": "Torna alla dashboard",
+      "loading": "Caricamento dati pianificazione...",
+      "teamScheduleFor": "Pianificazione del team per",
+      "members": "membri",
+      "selectMonth": "Seleziona mese",
+      "currentSchedule": "Pianificazione corrente",
+      "currentScheduleDesc": "Questa pianificazione e stata generata considerando disponibilita e preferenze di tutti",
+      "scheduleDetails": "Dettagli pianificazione",
+      "details": {
+        "fair": "Distribuzione equa dei turni",
+        "availability": "Basata sulla tua disponibilita",
+        "coverage": "Ottimizzata per la copertura del team"
+      },
+      "lastUpdated": "Ultimo aggiornamento",
+      "at": "alle",
+      "schedule": "Pianificazione",
+      "shiftTypes": "Tipi di turno",
+      "shiftTypesDescA": "Questo team ha",
+      "shiftTypesDescB": "tipo di turno",
+      "shiftTypesDescC": "con orari variabili a seconda del giorno della settimana.",
+      "shiftTypesDescD": "Ogni colonna rappresenta un tipo di turno consolidato che puo avere orari diversi nei vari giorni.",
+      "date": "Data",
+      "you": "Tu",
+      "unassigned": "Non assegnato",
+      "legend": "Legenda pianificazione",
+      "legendYourShifts": "I tuoi turni",
+      "legendTeamShifts": "Turni dei membri del team",
+      "teamSchedule": "Pianificazione team",
+      "teamNotFoundDesc": "Team non trovato o non hai accesso a questo team",
+      "exportPdf": "Esporta PDF",
+      "accessDenied": "Accesso negato",
+      "accessDeniedDesc": "Non hai accesso alla pianificazione di questo team",
+      "teamNotFound": "Team non trovato",
+      "teamNotFoundLong": "Il team che stai cercando non esiste o non hai i permessi per visualizzarne la pianificazione.",
+      "alerts": {
+        "exported": "Pianificazione esportata in PDF! Controlla la cartella Downloads."
+      }
+    }
+  },
+  "hostTeamAvailability": {
+    "remindButton": "Promemoria",
+    "remindSending": "Invio in corso…",
+    "remindNone": "Nessun promemoria inviato — tutti hanno già inserito almeno una disponibilità per questo mese.",
+    "remindSuccess": "Inviate {count} e-mail di promemoria.",
+    "remindNoShifts": "Aggiungi almeno un turno al team prima di inviare promemoria.",
+    "remindPartial": "Problemi: {failed} non riusciti, {skipped} saltati (nessuna e-mail).",
+    "remindFailed": "Impossibile inviare i promemoria. Riprova."
+  },
+  "auth": {
+    "signin": {
+      "title": "Welcome back",
+      "description": "Sign in to your account to continue",
+      "descriptionWithInvitation": "Sign in to complete your team invitation",
+      "teamInvitation": "Team Invitation",
+      "joiningTeam": "You're joining",
+      "email": "Email",
+      "password": "Password",
+      "emailPlaceholder": "doctor@hospital.com",
+      "passwordPlaceholder": "Enter your password",
+      "signInButton": "Sign In",
+      "signingIn": "Signing in...",
+      "forgotPassword": "Forgot your password?",
+      "noAccount": "Don't have an account?",
+      "signUpLink": "Sign up",
+      "loading": "Loading sign in...",
+      "messages": {
+        "emailConfirmed": {
+          "title": "Email Successfully Confirmed!",
+          "description": "Your email has been confirmed. Please sign in to continue."
+        },
+        "linkExpired": {
+          "title": "Confirmation Link Expired",
+          "description": "The email confirmation link has expired. Please sign in if you've already confirmed your email, or sign up again to receive a new confirmation link."
+        },
+        "linkAlreadyUsed": {
+          "title": "Link Already Used",
+          "description": "This confirmation link has already been used. Your email is already confirmed. Please sign in to continue."
+        },
+        "confirmationError": {
+          "title": "Confirmation Error",
+          "description": "There was an issue confirming your email. Please sign in if you've already confirmed, or try signing up again."
+        },
+        "noCode": {
+          "title": "Ready to Sign In",
+          "description": "Your email is already confirmed. Please sign in using the email and password you created during sign up."
+        }
+      }
     }
   }
 }

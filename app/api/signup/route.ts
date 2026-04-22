@@ -5,7 +5,7 @@ import { createServerClient } from "../../../utils/supabase/server";
 export async function POST(req: Request) {
   try {
     const supabase = createServerClient();
-    const { token, email, password, name, role, department, accountType } = await req.json();
+    const { token, email, password, name } = await req.json();
 
     if (!token || !email || !password || !name) {
       return NextResponse.json({ 
@@ -43,9 +43,9 @@ export async function POST(req: Request) {
       user_metadata: {
         first_name: name.split(' ')[0] || '',
         last_name: name.split(' ').slice(1).join(' ') || '',
-        account_type: accountType || 'participant',
-        role: role || invitation.role,
-        department: department || invitation.department
+        account_type: 'participant',
+        role: invitation.role || 'participant',
+        department: invitation.department || null
       }
     });
 
@@ -70,9 +70,9 @@ export async function POST(req: Request) {
         email: email,
         first_name: name.split(' ')[0] || '',
         last_name: name.split(' ').slice(1).join(' ') || '',
-        account_type: accountType || 'participant',
-        role: role || invitation.role,
-        department: department || invitation.department,
+        account_type: 'participant',
+        role: invitation.role || 'participant',
+        department: invitation.department || null,
         experience_level: 1,
         created_at: new Date().toISOString(),
         updated_at: new Date().toISOString()

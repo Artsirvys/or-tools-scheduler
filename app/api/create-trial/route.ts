@@ -1,20 +1,42 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
+import { createServerClient } from '@supabase/ssr'
+import { cookies } from 'next/headers'
 
 export async function POST(request: NextRequest) {
-  console.log('create-trial API called')
-  
   try {
+    const cookieStore = await cookies()
+    const sessionSupabase = createServerClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+      {
+        cookies: {
+          get(name: string) {
+            return cookieStore.get(name)?.value
+          },
+        },
+      }
+    )
+
+    const {
+      data: { user },
+      error: userError,
+    } = await sessionSupabase.auth.getUser()
+
+    if (userError || !user) {
+      return NextResponse.json(
+        { error: 'Unauthorized' },
+        { status: 401 }
+      )
+    }
+
     const body = await request.json()
-    console.log('Request body:', body)
-    
-    const { userId, planId } = body
+    const { planId } = body
 
     // Validate required fields
-    if (!userId || !planId) {
-      console.error('Missing required fields:', { userId, planId })
+    if (!planId) {
       return NextResponse.json(
-        { error: 'Missing required fields: userId and planId' },
+        { error: 'Missing required field: planId' },
         { status: 400 }
       )
     }
@@ -37,8 +59,6 @@ export async function POST(request: NextRequest) {
         persistSession: false
       }
     })
-
-    console.log('Service role client created, bypassing RLS policies')
 
     // Handle special case for default host plan
     let plan
@@ -92,7 +112,7 @@ export async function POST(request: NextRequest) {
     const { data: existingTrial, error: trialCheckError } = await supabase
       .from('trial_periods')
       .select('*')
-      .eq('user_id', userId)
+      .eq('user_id', user.id)
       .eq('status', 'active')
       .gt('trial_end', new Date().toISOString())
       .single()
@@ -137,7 +157,7 @@ export async function POST(request: NextRequest) {
     const { data: trial, error: trialError } = await supabase
       .from('trial_periods')
       .insert({
-        user_id: userId,
+        user_id: user.id,
         plan_id: planId,
         trial_start: trialStart.toISOString(),
         trial_end: trialEnd.toISOString(),

@@ -42,7 +42,7 @@
       },
       "step2": {
         "title": "Skonfiguruj szczegóły zespołu",
-        "description": "Skonfiguruj podstawowe informacje, w tym nazwę zespołu, dział i wymaganą liczbę pracowników na zmianę."
+        "description": "Skonfiguruj podstawowe informacje, takie jak nazwa zespołu i opcjonalny opis."
       },
       "step3": {
         "title": "Zdefiniuj zmiany",
@@ -123,6 +123,338 @@
     },
     "footer": {
       "copyright": "Wszelkie prawa zastrzeżone."
+    }
+  },
+  "participant": {
+    "dashboard": {
+      "loading": "Ladowanie panelu...",
+      "hello": "Czesc",
+      "participant": "Uczestnik",
+      "overviewSubtitle": "Oto Twoj przeglad dyzurow",
+      "supportProject": "Wesprzyj projekt",
+      "sendFeedback": "Wyslij opinie",
+      "logOut": "Wyloguj",
+      "setAvailability": "Ustaw moja dostepnosc",
+      "setAvailabilityDesc": "Zaznacz, kiedy mozesz pracowac",
+      "requestShiftChange": "Popros o zmiane dyzuru",
+      "requestShiftChangeDesc": "Zamien lub zmien dyzury",
+      "viewSchedule": "Zobacz harmonogram",
+      "viewScheduleDesc": "Zobacz swoje przydzielone dyzury",
+      "tabs": {
+        "overview": "Moj przeglad",
+        "team": "Moj zespol"
+      },
+      "nextShifts": "Moje najblizsze dyzury",
+      "loadingShifts": "Ladowanie Twoich dyzurow...",
+      "noTeam": "Nie jestes przypisany do zadnego zespolu",
+      "noTeamDesc": "Skontaktuj sie z administratorem, aby zostac dodanym do zespolu",
+      "noShifts": "Brak zaplanowanych nadchodzacych dyzurow",
+      "noShiftsDesc": "Tutaj zobaczysz swoje dyzury, gdy zostana Ci przydzielone",
+      "status": {
+        "confirmed": "Potwierdzony",
+        "changeRequested": "Poproszono o zmiane"
+      },
+      "change": "Zmien",
+      "newNotifications": "Nowe powiadomienia",
+      "noNotifications": "Brak nowych powiadomien",
+      "noNotificationsDesc": "Tutaj zobaczysz prosby o zamiane dyzurow, gdy sie pojawia",
+      "accept": "Akceptuj",
+      "decline": "Odrzuc",
+      "selectTeamToView": "Wybierz zespol do podgladu",
+      "selectTeamToViewDesc": "Wybierz zespol, aby zobaczyc jego czlonkow i szczegoly",
+      "notifications": {
+        "wantsToSwap": "chce zamienic",
+        "on": "dnia",
+        "withYour": "z Twoim",
+        "unknownUser": "Nieznany uzytkownik",
+        "unknownShift": "Nieznany dyzur",
+        "unknownTeam": "Nieznany zespol",
+        "unknownTime": "Nieznany czas"
+      },
+      "time": {
+        "justNow": "Przed chwila",
+        "oneHourAgo": "1 godzine temu",
+        "hoursAgo": "godzin temu",
+        "oneDayAgo": "1 dzien temu",
+        "daysAgo": "dni temu"
+      },
+      "alerts": {
+        "openShiftChangeFailed": "Nie udalo sie otworzyc prosby o zmiane dyzuru",
+        "userNotAuthenticated": "Uzytkownik nie jest uwierzytelniony",
+        "processRequestFailed": "Nie udalo sie przetworzyc prosby",
+        "acceptedSuccess": "Prosba o zmiane dyzuru zaakceptowana! Twoj harmonogram zostal zaktualizowany.",
+        "acceptFailed": "Nie udalo sie zaakceptowac prosby",
+        "declineFailed": "Nie udalo sie odrzucic prosby",
+        "declinedSuccess": "Prosba o zmiane dyzuru zostala odrzucona."
+      },
+      "donation": {
+        "title": "Wesprzyj AISchedulator",
+        "line1": "Jesli AISchedulator pomaga Tobie lub Twojemu zespolowi, mozesz wesprzec rozwoj.",
+        "line2": "Kazda darowizna pomaga utrzymac projekt i finansowac nowe funkcje. ❤️"
+      },
+      "close": "Zamknij"
+    },
+    "availability": {
+      "title": "Ustaw dostepnosc",
+      "backToDashboard": "Powrot do panelu",
+      "loading": "Ladowanie ustawien dostepnosci...",
+      "noTeamTitle": "Nie jestes jeszcze przypisany do zadnego zespolu",
+      "noTeamDesc": "Skontaktuj sie z administratorem, aby zostac dodanym do zespolu przed ustawieniem dostepnosci.",
+      "selectTeam": "Wybierz zespol",
+      "selectMonth": "Wybierz miesiac",
+      "legendTitle": "Legenda dostepnosci",
+      "legendDesc": "Kliknij dowolna kombinacje daty i dyzuru, aby ustawic dostepnosc. Niezmienione daty licza sie jako dostepne.",
+      "date": "Data",
+      "range": {
+        "trigger": "Zakres",
+        "titleAll": "Wszystkie dyzury (ta kolumna)",
+        "titleShift": "Ta kolumna dyzuru",
+        "hintAll": "Kazda kolumna dyzuru dostaje ten status w wybranym zakresie dni (tylko w dniach, gdy dyzur obowiazuje).",
+        "hintShift": "Aktualizowane sa tylko dni, w ktorych ten dyzur jest widoczny w tabeli (jak przy klikaniu komorek).",
+        "from": "Od",
+        "to": "Do",
+        "statusLabel": "Dostepnosc",
+        "apply": "Zastosuj do zakresu",
+        "ariaAll": "Ustaw dostepnosc dla zakresu dat dla wszystkich dyzurow",
+        "ariaShiftPrefix": "Ustaw zakres dat dla kolumny"
+      },
+      "copy": {
+        "trigger": "Skopiuj z poprzedniego miesiaca",
+        "title": "Kopiuj poprzedni miesiac",
+        "desc": "Wczytaj zapisana dostepnosc z {prev} do {current}. Nadpisuje nakladajace sie dni w tabeli (tylko istniejace typy dyzurow).",
+        "dayOfMonth": "Ten sam dzien miesiaca",
+        "dayOfMonthHelp": "Dzien 10 → dzien 10. Brakujace dni w tym miesiacu sa pomijane (np. 31 w krotszym miesiacu).",
+        "weekday": "Ta sama pozycja dnia tygodnia",
+        "weekdayHelp": "Wedlug kolejnosci w miesiacu (np. 2. wtorek → 2. wtorek). Pomijane, gdy nie wystepuje.",
+        "cancel": "Anuluj",
+        "apply": "Kopiuj",
+        "applying": "Kopiowanie…",
+        "empty": "Brak zapisanej dostepnosci w poprzednim miesiacu.",
+        "success": "Dostepnosc skopiowana. Sprawdz i zapisz.",
+        "failed": "Nie udalo sie skopiowac. Sprobuj ponownie."
+      },
+      "dragFill": {
+        "lead": "Dotknij komorki dyzuru, aby zmieniac. Wybierz pedzel, przytrzymaj (~0,2s) lub przeciagnij. Strone przewijaj lewa kolumna dat.",
+        "brush": "Przeciagniecie wypelnia"
+      },
+      "bulk": {
+        "title": "Szybko: oznacz jako niedostepny",
+        "desc": "Dotyczy miesiaca pokazanego ponizej. Aktualizowane sa tylko komorki widoczne w tabeli.",
+        "weekends": "Cale weekendy jako niedostepne",
+        "workdays": "Wszystkie dni robocze jako niedostepne",
+        "shiftSection": "Wedlug typu dyzuru",
+        "shiftHint": "Wybierz jedna lub wiecej kolumn dyzurow dla tego zespolu.",
+        "noShifts": "Brak dyzurow dla tego zespolu.",
+        "selectAllShifts": "Zaznacz wszystkie",
+        "clearShifts": "Wyczysc",
+        "applyShifts": "Oznacz wybrane dyzury jako niedostepne",
+        "weekdaySection": "Wedlug dnia tygodnia",
+        "weekdayHint": "Wybierz dni; w te dni wszystkie kolumny dyzurow beda niedostepne w tym miesiacu.",
+        "selectAllDays": "Zaznacz wszystkie",
+        "clearDays": "Wyczysc",
+        "applyWeekdays": "Oznacz wybrane dni jako niedostepne"
+      },
+      "status": {
+        "available": "Dostepny",
+        "availableDesc": "Moge pracowac na tym dyzurze",
+        "priority": "Priorytet",
+        "priorityDesc": "Preferuje ten dyzur",
+        "unavailable": "Niedostepny",
+        "unavailableDesc": "Nie moge pracowac na tym dyzurze",
+        "vacation": "Urlop",
+        "vacationDesc": "Na urlopie",
+        "conference": "Konferencja",
+        "conferenceDesc": "Na konferencji",
+        "notSet": "Nie ustawiono",
+        "notSetDesc": "Jawny brak preferencji (po pozostalych statusach)"
+      },
+      "alerts": {
+        "saveFailed": "Nie udalo sie zapisac dostepnosci",
+        "saveSuccess": "Dostepnosc zapisana pomyslnie!",
+        "draftSaved": "Dostepnosc zapisana jako szkic! Mozesz kontynuowac edycje pozniej."
+      },
+      "saveDraft": "Zapisz jako szkic",
+      "saveAvailability": "Zapisz dostepnosc",
+      "saving": "Zapisywanie..."
+    },
+    "shiftChange": {
+      "title": "Prosby o zmiane dyzurow",
+      "backToDashboard": "Powrot do panelu",
+      "loading": "Ladowanie danych o zmianach dyzurow...",
+      "requestTitle": "Popros o zmiane dyzuru",
+      "requestDesc": "Popros o zmiane jednego z przydzielonych dyzurow z innym czlonkiem zespolu",
+      "selectTeam": "Wybierz zespol",
+      "noTeams": "Brak dostepnych zespolow",
+      "currentShift": "Aktualny dyzur do zmiany",
+      "currentShiftPlaceholder": "Wybierz dyzur do zmiany",
+      "noShiftsForTeam": "Brak nadchodzacych dyzurow dla tego zespolu",
+      "selectTeamFirst": "Najpierw wybierz zespol",
+      "preferredDate": "Preferowana nowa data",
+      "pickDate": "Wybierz date",
+      "showAvailableDates": "Kliknij tutaj, aby zobaczyc dostepne daty",
+      "howItWorks": "Jak to dziala",
+      "howItWorksDesc": "Wybierz date, gdy ktos inny w Twoim zespole pracuje, i wybierz typ dyzuru. System znajdzie czlonka zespolu z tym dyzurem i wysle prosbe o zamiane.",
+      "preferredShift": "Preferowany nowy dyzur",
+      "preferredShiftPlaceholder": "Wybierz preferowany czas dyzuru",
+      "noShiftsAnyTeam": "Brak dyzurow dla Twoich zespolow",
+      "reasonOptional": "Powod zmiany (opcjonalnie)",
+      "reasonPlaceholder": "Wyjasnij, dlaczego potrzebujesz zmiany tego dyzuru...",
+      "sending": "Wysylanie prosby...",
+      "sendRequest": "Wyslij prosbe o zmiane",
+      "pendingTitle": "Oczekujace prosby",
+      "pendingDesc": "Prosby o zmiane dyzurow wymagajace Twojej odpowiedzi",
+      "myRequests": "Moje prosby",
+      "myRequestsDesc": "Sledz status swoich prosb o zmiane dyzurow",
+      "original": "Oryginalny",
+      "requested": "Zadany",
+      "message": "Wiadomosc",
+      "unknownShift": "Nieznany dyzur",
+      "unknownTeam": "Nieznany zespol",
+      "noPending": "Brak oczekujacych prosb",
+      "noRequestsYet": "Brak prosb",
+      "accept": "Akceptuj",
+      "decline": "Odrzuc",
+      "status": {
+        "pending": "Oczekujacy",
+        "approved": "Zaakceptowany",
+        "rejected": "Odrzucony"
+      },
+      "time": {
+        "justNow": "Przed chwila",
+        "oneHourAgo": "1 godzine temu",
+        "hoursAgo": "godzin temu",
+        "oneDayAgo": "1 dzien temu",
+        "daysAgo": "dni temu"
+      },
+      "confirm": {
+        "title": "Potwierdz prosbe o zmiane dyzuru",
+        "from": "Z",
+        "to": "Na",
+        "team": "Zespol",
+        "on": "dnia",
+        "reason": "Powod",
+        "footer": "System znajdzie czlonka zespolu z zadanym dyzurem i wysle mu prosbe o zamiane. Czy chcesz kontynuowac?"
+      },
+      "alerts": {
+        "userNotAuthenticated": "Uzytkownik nie jest uwierzytelniony. Zaloguj sie ponownie.",
+        "selectTeamFirst": "Najpierw wybierz zespol.",
+        "selectCurrentShift": "Wybierz dyzur, ktory chcesz zmienic.",
+        "selectPreferredDate": "Wybierz preferowana nowa date.",
+        "selectPreferredShift": "Wybierz preferowany nowy czas dyzuru.",
+        "futureDateOnly": "Wybierz przyszla date dla preferowanego dyzuru.",
+        "shiftDataMissing": "Nie znaleziono danych dyzuru. Sprobuj ponownie.",
+        "noShiftsAvailable": "Brak dostepnych dyzurow. Sprawdz przydzialy zespolu.",
+        "selectedShiftNotFound": "Wybrany dyzur nie zostal znaleziony",
+        "availableDatesNext30": "Dostepne daty w ciagu najblizszych 30 dni",
+        "noScheduledShiftsNext30": "Nie znaleziono zaplanowanych dyzurow dla Twojego zespolu w najblizszych 30 dniach.",
+        "noShiftsOnDatePrefix": "Brak zaplanowanych dyzurow dla Twojego zespolu na dzien",
+        "noShiftsOnDateBody": "To moze oznaczac:\n\n1. Harmonogram nie zostal jeszcze wygenerowany dla tej daty\n2. Zadni czlonkowie zespolu nie sa przypisani do pracy tego dnia\n3. Data jest poza aktualnym okresem harmonogramu\n\nSkontaktuj sie z gospodarzem zespolu, aby zaplanowac dyzury na ten dzien, lub wybierz inna date.",
+        "errorFindingTeamMembers": "Blad podczas wyszukiwania czlonkow zespolu",
+        "errorFindingAvailableShifts": "Blad podczas wyszukiwania dostepnych dyzurow",
+        "noAssignmentsOnDate": "Nikt w Twoim zespole nie ma przydzielonych dyzurow na dzien:",
+        "noMatchingShiftPrefix": "Nikt w Twoim zespole nie jest przypisany do",
+        "noMatchingShiftOn": "dyzuru w dniu",
+        "availableShiftsOnDate": "Dostepne dyzury tego dnia",
+        "pickDifferentShiftOrDate": "Wybierz inny typ dyzuru lub inna date.",
+        "noShiftDetails": "Nie udalo sie pobrac szczegolow dyzurow dla dostepnych przydzialow. To moze byc problem z dostepem do danych.",
+        "createRequestFailed": "Nie udalo sie utworzyc prosby o zmiane dyzuru",
+        "requestSent": "Prosba o zmiane dyzuru zostala wyslana pomyslnie!",
+        "submitFailed": "Nie udalo sie wyslac prosby",
+        "processFailed": "Nie udalo sie przetworzyc prosby",
+        "acceptSuccess": "Prosba o zmiane dyzuru zaakceptowana i dyzury pomyslnie zamienione!",
+        "declineFailed": "Nie udalo sie odrzucic prosby",
+        "declineSuccess": "Prosba zostala pomyslnie odrzucona!"
+      }
+    },
+    "schedule": {
+      "title": "Harmonogram mojego zespolu",
+      "backToDashboard": "Powrot do panelu",
+      "loading": "Ladowanie danych harmonogramu...",
+      "teamScheduleFor": "Harmonogram zespolu dla",
+      "members": "czlonkow",
+      "selectMonth": "Wybierz miesiac",
+      "currentSchedule": "Aktualny harmonogram",
+      "currentScheduleDesc": "Ten harmonogram zostal wygenerowany z uwzglednieniem dostepnosci i preferencji wszystkich",
+      "scheduleDetails": "Szczegoly harmonogramu",
+      "details": {
+        "fair": "Sprawiedliwy podzial dyzurow",
+        "availability": "Na podstawie Twojej dostepnosci",
+        "coverage": "Zoptymalizowany pod katem pokrycia zespolu"
+      },
+      "lastUpdated": "Ostatnia aktualizacja",
+      "at": "o",
+      "schedule": "harmonogram",
+      "shiftTypes": "Typy dyzurow",
+      "shiftTypesDescA": "Ten zespol ma",
+      "shiftTypesDescB": "typ dyzuru",
+      "shiftTypesDescC": "z roznymi godzinami zaleznymi od dnia tygodnia.",
+      "shiftTypesDescD": "Kazda kolumna reprezentuje scalony typ dyzuru, ktory moze miec rozne zakresy godzin w roznych dniach.",
+      "date": "Data",
+      "you": "Ty",
+      "unassigned": "Nieprzypisany",
+      "legend": "Legenda harmonogramu",
+      "legendYourShifts": "Twoje dyzury",
+      "legendTeamShifts": "Dyzury czlonkow zespolu",
+      "teamSchedule": "Harmonogram zespolu",
+      "teamNotFoundDesc": "Nie znaleziono zespolu lub nie masz do niego dostepu",
+      "exportPdf": "Eksportuj PDF",
+      "accessDenied": "Brak dostepu",
+      "accessDeniedDesc": "Nie masz dostepu do harmonogramu tego zespolu",
+      "teamNotFound": "Nie znaleziono zespolu",
+      "teamNotFoundLong": "Szukany zespol nie istnieje lub nie masz uprawnien do podgladu jego harmonogramu.",
+      "alerts": {
+        "exported": "Harmonogram wyeksportowano do PDF! Sprawdz folder Downloads."
+      }
+    }
+  },
+  "hostTeamAvailability": {
+    "remindButton": "Wyślij przypomnienie",
+    "remindSending": "Wysyłanie…",
+    "remindNone": "Brak przypomnień — wszyscy mają co najmniej jedną dostępność na ten miesiąc.",
+    "remindSuccess": "Wysłano {count} wiadomości e-mail.",
+    "remindNoShifts": "Dodaj co najmniej jeden typ dyżuru przed wysłaniem przypomnień.",
+    "remindPartial": "Uwagi: {failed} niepowodzeń, {skipped} pominięto (brak e-maila).",
+    "remindFailed": "Nie udało się wysłać przypomnień. Spróbuj ponownie."
+  },
+  "auth": {
+    "signin": {
+      "title": "Welcome back",
+      "description": "Sign in to your account to continue",
+      "descriptionWithInvitation": "Sign in to complete your team invitation",
+      "teamInvitation": "Team Invitation",
+      "joiningTeam": "You're joining",
+      "email": "Email",
+      "password": "Password",
+      "emailPlaceholder": "doctor@hospital.com",
+      "passwordPlaceholder": "Enter your password",
+      "signInButton": "Sign In",
+      "signingIn": "Signing in...",
+      "forgotPassword": "Forgot your password?",
+      "noAccount": "Don't have an account?",
+      "signUpLink": "Sign up",
+      "loading": "Loading sign in...",
+      "messages": {
+        "emailConfirmed": {
+          "title": "Email Successfully Confirmed!",
+          "description": "Your email has been confirmed. Please sign in to continue."
+        },
+        "linkExpired": {
+          "title": "Confirmation Link Expired",
+          "description": "The email confirmation link has expired. Please sign in if you've already confirmed your email, or sign up again to receive a new confirmation link."
+        },
+        "linkAlreadyUsed": {
+          "title": "Link Already Used",
+          "description": "This confirmation link has already been used. Your email is already confirmed. Please sign in to continue."
+        },
+        "confirmationError": {
+          "title": "Confirmation Error",
+          "description": "There was an issue confirming your email. Please sign in if you've already confirmed, or try signing up again."
+        },
+        "noCode": {
+          "title": "Ready to Sign In",
+          "description": "Your email is already confirmed. Please sign in using the email and password you created during sign up."
+        }
+      }
     }
   }
 }
