@@ -276,9 +276,10 @@ class ScheduleSolver:
             rule_parameters = {}
 
         try:
-            apply_if_at_least = int(rule_parameters.get('apply_if_vacation_days_at_least', 1))
+            # Default: no reduction for 0-4 vacation days (apply reductions starting at 5+)
+            apply_if_at_least = int(rule_parameters.get('apply_if_vacation_days_at_least', 5))
         except (TypeError, ValueError):
-            apply_if_at_least = 1
+            apply_if_at_least = 5
         if vacation_days_count < apply_if_at_least:
             return default_max
 
@@ -334,6 +335,10 @@ class ScheduleSolver:
         if not raw_text:
             return False
 
+        # Be conservative: only infer from the known template wording to avoid accidental matches.
+        if 'vacation-adjusted monthly cap' in raw_text:
+            return True
+
         has_vacation_word = 'vacation' in raw_text
         has_cap_word = (
             'max days per month' in raw_text
@@ -347,7 +352,7 @@ class ScheduleSolver:
             and ('28' in raw_text and '75' in raw_text)
         )
 
-        return has_vacation_word and (has_cap_word or has_default_tiers)
+        return has_vacation_word and has_cap_word and has_default_tiers
 
     def _get_member_total_shift_limits(self, members, availability, constraints):
         """Get effective total shift limit for each member
