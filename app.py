@@ -454,6 +454,9 @@ class ScheduleSolver:
         constraints_added = 0
         for m in range(len(members)):
             member_id = members[m].get('id', '')
+            if member_id == "unassigned":
+                # Dummy worker should not inherit human monthly caps
+                continue
             
             # Get this member's effective limit
             member_max_shifts = member_limits.get(member_id, default_max_shifts)
@@ -487,7 +490,12 @@ class ScheduleSolver:
         member_limits = self._get_member_total_shift_limits(members, availability, constraints)
         default_max = constraints.get('max_days_per_month', 31)
         
-        # Identify members with custom limits (limits different from default)
+        # Identify members whose effective monthly cap differs from the team's configured default.
+        #
+        # IMPORTANT: vacation-adjusted caps can be *equal to* default_max for members with 0 vacation
+        # (no reduction), but still differ for others. The old check only excluded member_limit < default_max,
+        # which incorrectly kept vacation-adjusted members inside the hard "±1" fairness bucket and could
+        # fight per-member caps.
         members_with_custom_limits = set()
         members_without_custom_limits = []
         
@@ -495,10 +503,12 @@ class ScheduleSolver:
             member_id = members[m].get('id', '')
             member_limit = member_limits.get(member_id, default_max)
             
-            if member_limit < default_max:
-                # This member has a custom limit lower than default
+            if member_limit != default_max:
                 members_with_custom_limits.add(m)
-                logging.info(f"Member {members[m].get('name', member_id)} excluded from fair distribution (custom limit: {member_limit})")
+                logging.info(
+                    f"Member {members[m].get('name', member_id)} excluded from fair distribution "
+                    f"(effective monthly cap {member_limit} != team default {default_max})"
+                )
             else:
                 members_without_custom_limits.append(m)
         
@@ -539,6 +549,8 @@ class ScheduleSolver:
         
         constraints_added = 0
         for m in range(len(members)):
+            if members[m].get("id") == "unassigned":
+                continue
             for d in range(days_in_month - max_consecutive):
                 # For each possible starting day, ensure no more than max_consecutive shifts in a row
                 # This prevents workers from being assigned to too many consecutive shifts
