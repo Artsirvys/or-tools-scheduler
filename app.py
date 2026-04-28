@@ -223,9 +223,14 @@ class ScheduleSolver:
         constraints_added = 0
         for s in range(len(shifts)):
             for d in range(days_in_month):
-                # Sum of workers assigned to this shift on this day should be <= workers_per_shift
+                # Sum of workers assigned to this shift on this day should be exactly workers_per_shift.
+                #
+                # NOTE: The model includes a dummy "unassigned" worker, so exact coverage remains
+                # feasible even when real workers cannot fill all slots due to other hard constraints.
+                # This guarantees: use real workers whenever possible, and use "unassigned" only for
+                # genuinely unfillable slots.
                 shift_sum = sum(x[m, s, d] for m in range(len(members)))
-                self.model.Add(shift_sum <= workers_per_shift)
+                self.model.Add(shift_sum == workers_per_shift)
                 constraints_added += 1
         
         logging.info(f"Added {constraints_added} workers per shift constraints")
@@ -970,13 +975,20 @@ class ScheduleSolver:
         """Add multi-objective optimization to balance multiple scheduling goals"""
         logging.info("Setting up multi-objective optimization...")
         
-        # 1. PRIMARY OBJECTIVE: Maximize total assignments (fill shifts)
-        total_assignments = sum(x[m, s, d] for m in range(len(members)) for s in range(len(shifts)) for d in range(days_in_month))
-        logging.info(f"Primary objective: Maximize {len(members) * len(shifts) * days_in_month} possible assignments")
-        
-        # 2. SECONDARY OBJECTIVE: Minimize unassigned shifts (penalty for dummy worker)
+        # 1. PRIMARY OBJECTIVE: Minimize unassigned slots (highest priority).
+        # This makes the solver prefer real workers whenever mathematically possible.
         unassigned_penalty = sum(x[dummy_index, s, d] for s in range(len(shifts)) for d in range(days_in_month))
-        logging.info(f"Secondary objective: Minimize {len(shifts) * days_in_month} possible unassigned shifts")
+        logging.info(f"Primary objective: Minimize {len(shifts) * days_in_month} possible unassigned shifts")
+        
+        # 2. SECONDARY OBJECTIVE: Maximize real assignments (excludes dummy worker).
+        real_total_assignments = sum(
+            x[m, s, d]
+            for m in range(len(members))
+            if m != dummy_index
+            for s in range(len(shifts))
+            for d in range(days_in_month)
+        )
+        logging.info(f"Secondary objective: Maximize {dummy_index * len(shifts) * days_in_month} possible real assignments")
         
         # 3. TERTIARY OBJECTIVE: Maximize priority assignments
         priority_bonus = 0
@@ -998,14 +1010,14 @@ class ScheduleSolver:
         shift_type_variance = self._calculate_shift_type_variance(x, members, shifts, days_in_month)
         logging.info(f"Quinary objective: Minimize shift type variance")
         
-        # Multi-objective function with weighted priorities
-        # Weights: assignments(1000) > priority(100) > unassigned(10) > workload_variance(50) > shift_type_variance(3)
+        # Multi-objective function with weighted priorities.
+        # Weights are chosen so reducing unassigned dominates all soft balancing terms.
         objective = (
-            total_assignments * 1000 +      # Primary: maximize assignments
-            priority_bonus * 100 +          # Secondary: prefer priority assignments
-            -unassigned_penalty * 10 +      # Tertiary: minimize unassigned shifts
-            -workload_variance * 50 +       # Quaternary: balance total workload
-            -shift_type_variance * 3        # Quinary: balance shift types
+            -unassigned_penalty * 1_000_000 +  # Primary: minimize unassigned shifts
+            real_total_assignments * 10_000 +  # Secondary: maximize real assignments
+            priority_bonus * 100 +             # Then: prefer priority assignments
+            -workload_variance * 50 +          # Then: balance total workload
+            -shift_type_variance * 3           # Then: balance shift types
         )
         
         self.model.Maximize(objective)
