@@ -85,11 +85,10 @@ class ScheduleSolver:
             logging.info("Adding max shifts per month constraint...")
             self._add_max_shifts_per_month_constraint(x, members, shifts, availability, days_in_month, constraints)
             
-            # 3.5. FAIR DISTRIBUTION (Hard constraint)
-            # This constraint ensures equal distribution of shifts among team members
-            # Maximum difference between any two members' shift counts should be at most 1
-            logging.info("Adding fair distribution constraint...")
-            self._add_fair_distribution_hard_constraint(x, members, shifts, availability, days_in_month, constraints)
+            # 3.5. FAIR DISTRIBUTION
+            # Fairness is intentionally SOFT and handled in the objective (workload variance term).
+            # Do not add hard pairwise fairness constraints here, otherwise feasible coverage may drop.
+            logging.info("Skipping hard fair distribution constraints (soft fairness via objective).")
             
             # 4. MAX CONSECUTIVE SHIFTS (Hard constraint)
             # This constraint limits how many shifts in a row a worker can be assigned
