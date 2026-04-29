@@ -1012,11 +1012,11 @@ class ScheduleSolver:
         # Multi-objective function with weighted priorities.
         # Weights are chosen so reducing unassigned dominates all soft balancing terms.
         objective = (
-            -unassigned_penalty * 1_000_000 +  # Primary: minimize unassigned shifts
-            real_total_assignments * 10_000 +  # Secondary: maximize real assignments
-            priority_bonus * 100 +             # Then: prefer priority assignments
-            -workload_variance * 50 +          # Then: balance total workload
-            -shift_type_variance * 3           # Then: balance shift types
+            -unassigned_penalty * 1_000_000_000_000 +  # Dominant: minimize unassigned shifts
+            real_total_assignments * 10_000 +          # Next: maximize real assignments
+            priority_bonus * 100 +                     # Then: prefer priority assignments
+            -workload_variance * 50 +                  # Then: balance total workload (soft)
+            -shift_type_variance * 3                   # Then: balance shift types (soft)
         )
         
         self.model.Maximize(objective)
